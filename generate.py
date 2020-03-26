@@ -27,12 +27,14 @@ def read_team_data(data):
         
         if header is None:
             header = cols
-        else:
-            td[cols[0]] = { 
-                "layer": cols[2],
-                "display_name": cols[1].replace("&", "&amp;"),
-                "style": cols[3],
-            }
+            continue
+
+        td[cols[0]] = {
+            "layer": cols[2],
+            "display_name": cols[1].replace("&", "&amp;"),
+            "style": cols[3],
+            "sort_order": cols[4],
+        }
     
     return td
 
@@ -218,6 +220,8 @@ def relayout_items(items, start_x, end_y):
 
 
 def distribute_horizontal(items, start_x, padding):
+    # sort items by sort order
+    items.sort(key=lambda x: x['order'])
     for item in items:
         item["x"] = start_x
         start_x += item["w"] + padding
@@ -229,10 +233,10 @@ def move_workgroup_to(wg, start_x, start_y):
 
     offset_y = 40
     for i in range(1, 5):
-        ti = "team%d" % i
-        wg[ti]["x"] = start_x
-        wg[ti]["y"] = start_y + offset_y
-        offset_y += wg[ti]["h"]
+        wgi = wg["team%d" % i]
+        wgi["x"] = start_x
+        wgi["y"] = start_y + offset_y
+        offset_y += wgi["h"]
 
 
 def layout_workgroup(wgs):
@@ -291,6 +295,7 @@ def create_layout(items, wgs_byteam):
                 "style": team_info["style"],
                 "code": team_code,
                 "type": "team",
+                "order": team_info["sort_order"],
                 "groups": {},
             }
         team = root[team_code]
@@ -316,7 +321,7 @@ def create_layout(items, wgs_byteam):
         group["items"].append(item)
 
     start_x = 0
-    start_y = 100
+    start_y = 300
 
     wg_padding = 180
 
@@ -412,7 +417,7 @@ env = Environment(
     line_statement_prefix='#',
 )
 
-template = env.get_template('main.tmpl')
+template = env.get_template('corepayment.tmpl')
 
 
 mdls, teams, wgs, cfg = read_data("/Users/huuhoa/Documents/CorePayment/orgchart/CorePayment.xlsx")
