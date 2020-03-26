@@ -71,12 +71,21 @@ def read_workgroup_data(data):
         
         if header is None:
             header = cols
-        else:
-            wgs[cols[0]] = {
-                "type": cols[1],
-                "team": cols[2],
-                "members": cols[3].split(","),
-            }
+            continue
+
+        # skip empty line
+        if cols[0] == "" or cols[0] is None:
+            continue
+
+        col3 = cols[3]
+        if col3 is None:
+            col3 = ""
+
+        wgs[cols[0]] = {
+            "type": cols[1],
+            "team": cols[2],
+            "members": col3.split(","),
+        }
     return wgs
 
 
@@ -227,7 +236,7 @@ def move_workgroup_to(wg, start_x, start_y):
 
 
 def layout_workgroup(wgs):
-    height_lut = [40, 40, 60, 80, 100, 120, 130, 140, 150, 160, 170, 180]
+    height_lut = [30, 40, 50, 60, 70, 90, 110, 120, 140, 150, 160, 170]
     by_team = {}
     for wg in wgs.values():
         if wg["team"] not in by_team:
@@ -400,6 +409,7 @@ env = Environment(
     autoescape=select_autoescape(['html', 'xml']),
     trim_blocks = True,
     lstrip_blocks = True,
+    line_statement_prefix='#',
 )
 
 template = env.get_template('main.tmpl')
