@@ -282,7 +282,7 @@ def layout_workgroup(wgs):
     return by_team
 
 
-def create_layout(items, wgs_byteam):
+def create_layout(items, wgs_byteam, teams):
     root = {}
     layers = {}
     for item in items:
@@ -409,20 +409,32 @@ def create_layout(items, wgs_byteam):
     return all_items
 
 
-env = Environment(
-    loader=FileSystemLoader('./templates'),
-    autoescape=select_autoescape(['html', 'xml']),
-    trim_blocks = True,
-    lstrip_blocks = True,
-    line_statement_prefix='#',
-)
+def main():
+    import argparse
 
-template = env.get_template('corepayment.tmpl')
+    parser = argparse.ArgumentParser(description='Render team structure to drawio file format.')
+    parser.add_argument('team_path', metavar='path', type=str,
+                        help='path to xlsx file that contains team structure')
+
+    args = parser.parse_args()
+
+    env = Environment(
+        loader=FileSystemLoader('./templates'),
+        autoescape=select_autoescape(['html', 'xml']),
+        trim_blocks = True,
+        lstrip_blocks = True,
+        line_statement_prefix='#',
+    )
+
+    template = env.get_template('corepayment.tmpl')
+
+    mdls, teams, wgs, cfg = read_data(args.team_path)
+
+    wgs_byteam = layout_workgroup(wgs)
+    all = create_layout(mdls, wgs_byteam, teams)
+
+    print(template.render(items=all, configs=cfg))
 
 
-mdls, teams, wgs, cfg = read_data("/Users/huuhoa/Documents/CorePayment/orgchart/CorePayment.xlsx")
-
-wgs_byteam = layout_workgroup(wgs)
-all = create_layout(mdls, wgs_byteam)
-
-print(template.render(items=all, configs=cfg))
+if __name__ == "__main__":
+    main()
