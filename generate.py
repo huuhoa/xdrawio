@@ -5,345 +5,6 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import random
 import string
 
-# teams = {
-#     "DP": { "layer": 1, "display_name": "Data Report &amp; Platform" },
-#     "AD": { "layer": 2, "display_name": "Accounting Domain" },
-#     "PP": { "layer": 2, "display_name": "Promotion Platform" },
-#     "PE": { "layer": 3, "display_name": "Payment Engine" },
-#     "UD": { "layer": 3, "display_name": "User Domain" },
-#     "MT": { "layer": 3, "display_name": "Transfer Domain" },
-#     "CC": { "layer": 3, "display_name": "Common Services" },
-#     "TC": { "layer": 4, "display_name": "Telco" },
-#     "GW": { "layer": 4, "display_name": "Payment Gateway" },
-# }
-
-items = [
-    {
-        "wg_type": 1,
-        "display_name": "User Assets",
-        "status": 0,
-        "type": "module",
-        "team": "UD",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "UD",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "User KYC",
-        "status": 0,
-        "type": "module",
-        "team": "UD",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 1,
-        "display_name": "User Profile",
-        "status": 2,
-        "type": "module",
-        "team": "UD",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 1,
-        "display_name": "User Verification",
-        "status": 2,
-        "type": "module",
-        "team": "UD",
-        "group": "Back Office",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "Transaction History",
-        "status": 1,
-        "type": "module",
-        "team": "UD",
-        "group": "Back Office",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 1,
-        "display_name": "User Assets",
-        "status": 0,
-        "type": "module",
-        "team": "UD",
-        "group": "Back Office",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "UD",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "User KYC",
-        "status": 0,
-        "type": "module",
-        "team": "UD",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 1,
-        "display_name": "User Profile",
-        "status": 2,
-        "type": "module",
-        "team": "DP",
-        "group": "Back Office",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 1,
-        "display_name": "User Verification",
-        "status": 2,
-        "type": "module",
-        "team": "AD",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "Transaction History",
-        "status": 1,
-        "type": "module",
-        "team": "UD",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "Bank Binding",
-        "status": 1,
-        "type": "module",
-        "team": "UD",
-        "group": "User Products",
-        "sub_group": "PCI DSS",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "User Core (User Info)",
-        "status": 1,
-        "type": "module",
-        "team": "UD",
-        "group": "User Core",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "BIM (Bank Info)",
-        "status": 1,
-        "type": "module",
-        "team": "UD",
-        "group": "User Core",
-        "sub_group": "PCI DSS",
-    },
-    {
-        "wg_type": 1,
-        "display_name": "User Assets",
-        "status": 0,
-        "type": "module",
-        "team": "DP",
-        "group": "Back Office",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "Accounting System",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "Reconciliation",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "Reconciliation",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "Reconciliation",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "Reconciliation",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "FA BackOffice",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "FA BackOffice",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "FA BackOffice",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "FA BackOffice",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "FA BackOffice",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "FA BackOffice",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "FA BackOffice",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 2,
-        "display_name": "User Limitation",
-        "status": 0,
-        "type": "module",
-        "team": "AD",
-        "group": "FA BackOffice",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "User KYC",
-        "status": 0,
-        "type": "module",
-        "team": "UD",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 1,
-        "display_name": "User Profile",
-        "status": 2,
-        "type": "module",
-        "team": "MT",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 1,
-        "display_name": "User Verification",
-        "status": 2,
-        "type": "module",
-        "team": "MT",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "Transaction History",
-        "status": 1,
-        "type": "module",
-        "team": "MT",
-        "group": "User Products",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "Bank Binding",
-        "status": 1,
-        "type": "module",
-        "team": "MT",
-        "group": "User Products",
-        "sub_group": "PCI DSS",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "User Core (User Info)",
-        "status": 1,
-        "type": "module",
-        "team": "MT",
-        "group": "User Core",
-        "sub_group": "",
-    },
-    {
-        "wg_type": 3,
-        "display_name": "BIM (Bank Info)",
-        "status": 1,
-        "type": "module",
-        "team": "MT",
-        "group": "User Core",
-        "sub_group": "PCI DSS",
-    },
-]
-
 header_height = 100
 item_height = 50
 item_width = 180
@@ -370,8 +31,33 @@ def read_team_data(data):
             td[cols[0]] = { 
                 "layer": cols[2],
                 "display_name": cols[1].replace("&", "&amp;"),
+                "style": cols[3],
             }
+    
     return td
+
+
+def read_configuration_data(wb):
+    ws = wb["Configuration"]
+    for tbl in ws._tables:
+        if tbl.name == "Configuration":
+            data = ws[tbl.ref]
+            break
+
+    cfg = {}
+    header = None
+    for row in data:
+        # Get a list of all columns in each row
+        cols = []
+        for col in row:
+            cols.append(col.value)
+        
+        if header is None:
+            header = cols
+        else:
+            cfg[cols[0]] = cols[1]
+
+    return cfg
 
 
 def read_workgroup_data(data):
@@ -389,7 +75,7 @@ def read_workgroup_data(data):
             wgs[cols[0]] = {
                 "type": cols[1],
                 "team": cols[2],
-                "members": cols[3],
+                "members": cols[3].split(","),
             }
     return wgs
 
@@ -421,13 +107,13 @@ def read_module_data(data):
 
 def convert_status(status):
     if status == "Not Started":
-        return 0
+        return "StatusStyle0"
     if status == "In Progress":
-        return 1
+        return "StatusStyle1"
     if status == "Completed":
-        return 2
+        return "StatusStyle2"
     
-    return 100
+    return "StatusStyleU"
 
 
 def read_data(file_path):
@@ -435,7 +121,10 @@ def read_data(file_path):
     import openpyxl
 
     # To open Workbook 
-    wb = openpyxl.load_workbook(file_path) 
+    wb = openpyxl.load_workbook(file_path)
+
+    cfg = read_configuration_data(wb)
+
     ws = wb["Teams"]
     
     # For row 0 and column 0 
@@ -454,10 +143,12 @@ def read_data(file_path):
             mdls = read_module_data(data)
             # print(mdls)
 
+    # normalize data
     for mdl in mdls:
-        mdl["wg_type"] = wgs[mdl["wg_type"]]["type"]
+        mdl["wg_stype"] = "WGStyle%d" % (wgs[mdl["wg_type"]]["type"])
 
-    return mdls, teams, wgs
+
+    return mdls, teams, wgs, cfg
 
 
 def randomString(stringLength=10):
@@ -523,7 +214,62 @@ def distribute_horizontal(items, start_x, padding):
         start_x += item["w"] + padding
 
 
-def create_layout(items):
+def move_workgroup_to(wg, start_x, start_y):
+    wg["team0"]["x"] = start_x
+    wg["team0"]["y"] = start_y
+
+    offset_y = 40
+    for i in range(1, 5):
+        ti = "team%d" % i
+        wg[ti]["x"] = start_x
+        wg[ti]["y"] = start_y + offset_y
+        offset_y += wg[ti]["h"]
+
+
+def layout_workgroup(wgs):
+    height_lut = [40, 40, 60, 80, 100, 120, 130, 140, 150, 160, 170, 180]
+    by_team = {}
+    for wg in wgs.values():
+        if wg["team"] not in by_team:
+            by_team[wg["team"]] = { 
+                "layout": {},
+                "team0": {},
+                "team1": {},
+                "team2": {},
+                "team3": {},
+                "team4": {},
+            }
+        team = by_team[wg["team"]]
+        team["team%d" % wg["type"]] = wg
+
+    # create layout for each team
+    for team in by_team.values():
+        for i in range(5):
+            ti = team["team%d" % i]
+            ti["w"] = 110
+            ti["h"] = height_lut[len(ti.get("members", []))]    # minimum height for empty
+            ti["style"] = "WGStyle%d" % i
+            ti["type"] = "wg"
+            ti["id"] = randomString()
+            ti["display_name"] = "&lt;br/&gt;".join(ti.get("members", ""))
+        
+        # recaliberate team 0 height
+        h = 0
+        for i in range(1, 5):
+            ti = "team%d" % i
+            h += team[ti]["h"]
+        team["team0"]["h"] = h
+        team["team0"]["display_name"] = "Leader: %s" % team["team0"]["display_name"]
+
+        # start_x = 100
+        # start_y = 200
+        # move_workgroup_to(team, start_x, start_y)
+        # print(team)
+
+    return by_team
+
+
+def create_layout(items, wgs_byteam):
     root = {}
     layers = {}
     for item in items:
@@ -533,6 +279,8 @@ def create_layout(items):
             root[team_code] = {
                 "id": randomString(),
                 "display_name": team_info["display_name"],
+                "style": team_info["style"],
+                "code": team_code,
                 "type": "team",
                 "groups": {},
             }
@@ -558,8 +306,10 @@ def create_layout(items):
         item["id"] = randomString()
         group["items"].append(item)
 
-    start_x = 120
+    start_x = 0
     start_y = 100
+
+    wg_padding = 180
 
     # first pass, layout all items inside group
     for team in root.values():
@@ -588,8 +338,8 @@ def create_layout(items):
     # second pass, rebalance teams, make sure all teams have equal height
     start_y = 0
     for l in sorted(layers.keys(), reverse = True):
-        start_x = 120
-        distribute_horizontal(layers[l], start_x, group_padding_right)
+        start_x = 120 + 80
+        distribute_horizontal(layers[l], start_x, group_padding_right + wg_padding)
 
         max_h = 0
         for team in layers[l]:
@@ -627,6 +377,8 @@ def create_layout(items):
             w = group["w"]
             start_x = start_x + w + group_padding_right
 
+        move_workgroup_to(wgs_byteam[team["code"]], team["x"] - 120, team["y"])
+
     # flat out
     all_items = []
     for team in root.values():
@@ -634,6 +386,10 @@ def create_layout(items):
         for group in team["groups"].values():
             all_items.append(group)
             all_items = all_items + group["items"]
+
+    for wg in wgs_byteam.values():
+        for i in range(5):
+            all_items.append(wg["team%d" % i])
 
     # print(all_items)
     return all_items
@@ -649,22 +405,9 @@ env = Environment(
 template = env.get_template('main.tmpl')
 
 
-wg_style = [
-    "",
-    "rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;fontSize=12;strokeColor=#82b366;gradientColor=#97d077;",
-    "rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;fontSize=12;strokeColor=#b85450;gradientColor=#ea6b66;",
-    "rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;fontSize=12;strokeColor=#d6b656;gradientColor=#ffd966;",
-    "rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;fontSize=12;strokeColor=#6c8ebf;gradientColor=#7ea6e0;"
-]
+mdls, teams, wgs, cfg = read_data("/Users/huuhoa/Documents/CorePayment/orgchart/CorePayment.xlsx")
 
-status_style = [
-    "rounded=0;whiteSpace=wrap;html=1;fillColor=#6d8764;fontSize=12;strokeColor=#3A5431;fontColor=#ffffff;",
-    "rounded=0;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontSize=12;strokeColor=#BD7000;fontColor=#ffffff;",
-    "rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;fontSize=12;strokeColor=#2D7600;fontColor=#ffffff;"
-]
+wgs_byteam = layout_workgroup(wgs)
+all = create_layout(mdls, wgs_byteam)
 
-mdls, teams, wgs = read_data("/Users/huuhoa/Documents/CorePayment/orgchart/CorePayment.xlsx")
-
-all = create_layout(mdls)
-
-print(template.render(items=all, wg_style=wg_style, status_style=status_style))
+print(template.render(items=all, configs=cfg))
