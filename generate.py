@@ -2,9 +2,6 @@
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-import random
-import string
-
 header_height = 100
 item_height = 50
 item_width = 180
@@ -15,51 +12,7 @@ group_padding_left = 20
 group_padding_right = 20
 group_padding_bottom = 20
 
-
-def encode_name(name):
-    '''
-    encode_name does encode special characters to be xml-compatible entities
-    '''
-
-    if name is None:
-        return name
-
-    return name.replace("&", "&amp;")
-
-
-class Shape(object):
-    def __init__(self):
-        self.id = randomString()
-        self.x = 0
-        self.y = 0
-        self.w = 0
-        self.h = 0
-        self.display_name = ""
-        self.type = "unknnown"
-
-
-class Module(Shape):
-    def __init__(self):
-        super().__init__()
-        self.type = "module"
-
-
-class Group(Shape):
-    def __init__(self):
-        super().__init__()
-        self.type = "group"
-        self.items = []
-
-
-class Team(Shape):
-    def __init__(self):
-        super().__init__()
-        self.type = "team"
-        self.groups = {}
-        self.layer = 0
-        self.style = ""
-        self.order = 0
-        self.code = ""
+import xdrawio
 
 
 def read_team_data(data):
@@ -77,7 +30,7 @@ def read_team_data(data):
 
         td[cols[0]] = {
             "layer": cols[2],
-            "display_name": encode_name(cols[1]),
+            "display_name": xdrawio.encode_name(cols[1]),
             "style": cols[3],
             "sort_order": cols[4],
         }
@@ -108,7 +61,7 @@ def read_group_data(data):
             continue
 
         d[cols[0]] = {
-            "display_name": encode_name(cols[1]),
+            "display_name": xdrawio.encode_name(cols[1]),
             # "layer": cols[2],
             # "style": cols[3],
             # "sort_order": cols[4],
@@ -184,7 +137,7 @@ def read_module_data(data):
             mdl = {
                 "team": cols[0],
                 "group": cols[1],
-                "display_name": encode_name(cols[2]),
+                "display_name": xdrawio.encode_name(cols[2]),
                 "wg_type": cols[3],
                 "status": convert_status(cols[4]),
                 "sub_group": cols[5],
@@ -250,12 +203,6 @@ def read_data(file_path):
 
 
     return mdls, d
-
-
-def randomString(stringLength=10):
-    """Generate a random string of fixed length """
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(stringLength))
 
 
 def layout_items(items, start_x, start_y):
@@ -352,7 +299,7 @@ def layout_workgroup(wgs):
             ti["h"] = height_lut[len(ti.get("members", []))]    # minimum height for empty
             ti["style"] = "WGStyle%d" % i
             ti["type"] = "wg"
-            ti["id"] = randomString()
+            ti["id"] = xdrawio.randomString()
             ti["display_name"] = "&lt;br/&gt;".join(ti.get("members", ""))
         
         # recaliberate team 0 height
@@ -371,6 +318,8 @@ def layout_workgroup(wgs):
 
 
 def create_layout(items, wgs_byteam, data):
+    from xdrawio.models import Team
+
     root = {}
     layers = {}
     for item in items:
@@ -405,13 +354,13 @@ def create_layout(items, wgs_byteam, data):
         group_code = item["group"]
         if group_code not in team.groups:
             team.groups[group_code] = {
-                "id": randomString(),
+                "id": xdrawio.randomString(),
                 "display_name": data.groups[group_code]["display_name"],
                 "type":"group",
                 "items":[],
             }
         group = team.groups[group_code]
-        item["id"] = randomString()
+        item["id"] = xdrawio.randomString()
         group["items"].append(item)
 
     start_x = 0
