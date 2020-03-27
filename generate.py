@@ -16,6 +16,17 @@ group_padding_right = 20
 group_padding_bottom = 20
 
 
+def encode_name(name):
+    '''
+    encode_name does encode special characters to be xml-compatible entities
+    '''
+
+    if name is None:
+        return name
+
+    return name.replace("&", "&amp;")
+
+
 def read_team_data(data):
     td = {}
     header = None
@@ -31,7 +42,7 @@ def read_team_data(data):
 
         td[cols[0]] = {
             "layer": cols[2],
-            "display_name": cols[1].replace("&", "&amp;"),
+            "display_name": encode_name(cols[1]),
             "style": cols[3],
             "sort_order": cols[4],
         }
@@ -106,14 +117,21 @@ def read_module_data(data):
             mdl = {
                 "team": cols[0],
                 "group": cols[1],
-                "display_name": cols[2],
+                "display_name": encode_name(cols[2]),
                 "wg_type": cols[3],
                 "status": convert_status(cols[4]),
                 "sub_group": cols[5],
+                "progress": convert_progress(cols[6]),
                 "type": "module",
             }
             mdls.append(mdl)
     return mdls
+
+
+def convert_progress(progress):
+    if progress is None:
+        return 0
+    return progress
 
 
 def convert_status(status):
