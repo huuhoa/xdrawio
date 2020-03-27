@@ -246,12 +246,12 @@ def distribute_horizontal(items, start_x, padding):
 
 
 def move_workgroup_to(wg, start_x, start_y):
-    wg["team0"]["x"] = start_x
-    wg["team0"]["y"] = start_y
+    wg[0]["x"] = start_x
+    wg[0]["y"] = start_y
 
     offset_y = 40
     for i in range(1, 5):
-        wgi = wg["team%d" % i]
+        wgi = wg[i]
         wgi["x"] = start_x
         wgi["y"] = start_y + offset_y
         offset_y += wgi["h"]
@@ -263,20 +263,19 @@ def layout_workgroup(wgs):
     for wg in wgs.values():
         if wg["team"] not in by_team:
             by_team[wg["team"]] = { 
-                "layout": {},
-                "team0": {},
-                "team1": {},
-                "team2": {},
-                "team3": {},
-                "team4": {},
+                0: {},
+                1: {},
+                2: {},
+                3: {},
+                4: {},
             }
         team = by_team[wg["team"]]
-        team["team%d" % wg["type"]] = wg
+        team[wg["type"]] = wg
 
     # create layout for each team
     for team in by_team.values():
         for i in range(5):
-            ti = team["team%d" % i]
+            ti = team[i]
             ti["w"] = 110
             ti["h"] = height_lut[len(ti.get("members", []))]    # minimum height for empty
             ti["style"] = "WGStyle%d" % i
@@ -287,10 +286,9 @@ def layout_workgroup(wgs):
         # recaliberate team 0 height
         h = 0
         for i in range(1, 5):
-            ti = "team%d" % i
-            h += team[ti]["h"]
-        team["team0"]["h"] = h
-        team["team0"]["display_name"] = "Leader: %s" % team["team0"]["display_name"]
+            h += team[i]["h"]
+        team[0]["h"] = h
+        team[0]["display_name"] = "Leader: %s" % team[0]["display_name"]
 
         # start_x = 100
         # start_y = 200
@@ -421,7 +419,7 @@ def create_layout(items, wgs_byteam, teams):
 
     for wg in wgs_byteam.values():
         for i in range(5):
-            all_items.append(wg["team%d" % i])
+            all_items.append(wg[i])
 
     # print(all_items)
     return all_items
