@@ -124,7 +124,7 @@ def layout_workgroup(wgs):
 
 
 def create_layout(items, wgs_byteam, data):
-    from xdrawio.models import Team, Group
+    from xdrawio.datatypes import Team, Group
 
     root = {}
     layers = {}

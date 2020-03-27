@@ -1,4 +1,4 @@
-from xdrawio.models import Shape
+from xdrawio.datatypes import Shape
 
 class Module(Shape):
     def __init__(self):

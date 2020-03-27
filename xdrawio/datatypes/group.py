@@ -1,4 +1,4 @@
-from xdrawio.models import Shape
+from xdrawio.datatypes import Shape
 
 class Group(Shape):
     def __init__(self):
