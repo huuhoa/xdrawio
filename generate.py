@@ -27,6 +27,41 @@ def encode_name(name):
     return name.replace("&", "&amp;")
 
 
+class Shape(object):
+    def __init__(self):
+        self.id = randomString()
+        self.x = 0
+        self.y = 0
+        self.w = 0
+        self.h = 0
+        self.display_name = ""
+        self.type = "unknnown"
+
+
+class Module(Shape):
+    def __init__(self):
+        super().__init__()
+        self.type = "module"
+
+
+class Group(Shape):
+    def __init__(self):
+        super().__init__()
+        self.type = "group"
+        self.items = []
+
+
+class Team(Shape):
+    def __init__(self):
+        super().__init__()
+        self.type = "team"
+        self.groups = {}
+        self.layer = 0
+        self.style = ""
+        self.order = 0
+        self.code = ""
+
+
 def read_team_data(data):
     td = {}
     header = None
@@ -35,7 +70,7 @@ def read_team_data(data):
         cols = []
         for col in row:
             cols.append(col.value)
-        
+
         if header is None:
             header = cols
             continue
@@ -48,6 +83,38 @@ def read_team_data(data):
         }
     
     return td
+
+
+class Data(object):
+    def __init__(self):
+        super().__init__()
+        self.teams = {}
+        self.groups = {}
+        self.workgroups = {}
+        self.configurations = {}
+
+
+def read_group_data(data):
+    d = {}
+    header = None
+    for row in data:
+        # Get a list of all columns in each row
+        cols = []
+        for col in row:
+            cols.append(col.value)
+
+        if header is None:
+            header = cols
+            continue
+
+        d[cols[0]] = {
+            "display_name": encode_name(cols[1]),
+            # "layer": cols[2],
+            # "style": cols[3],
+            # "sort_order": cols[4],
+        }
+
+    return d
 
 
 def read_configuration_data(wb):
@@ -64,7 +131,7 @@ def read_configuration_data(wb):
         cols = []
         for col in row:
             cols.append(col.value)
-        
+
         if header is None:
             header = cols
         else:
@@ -81,7 +148,7 @@ def read_workgroup_data(data):
         cols = []
         for col in row:
             cols.append(col.value)
-        
+
         if header is None:
             header = cols
             continue
@@ -110,7 +177,7 @@ def read_module_data(data):
         cols = []
         for col in row:
             cols.append(col.value)
-        
+
         if header is None:
             header = cols
         else:
@@ -149,10 +216,12 @@ def read_data(file_path):
     # Reading an excel file using Python 
     import openpyxl
 
+    d = Data()
+
     # To open Workbook 
     wb = openpyxl.load_workbook(file_path)
 
-    cfg = read_configuration_data(wb)
+    d.configurations = read_configuration_data(wb)
 
     ws = wb["Teams"]
     
@@ -162,22 +231,25 @@ def read_data(file_path):
         # Grab the 'data' from the table
         data = ws[tbl.ref]
         if tbl.name == "Teams":
-            teams = read_team_data(data)
+            d.teams = read_team_data(data)
 
         if tbl.name == "WorkGroups":
-            wgs = read_workgroup_data(data)
+            d.workgroups = read_workgroup_data(data)
             # print(wgs)
 
         if tbl.name == "Modules":
             mdls = read_module_data(data)
             # print(mdls)
 
+        if tbl.name == "Groups":
+            d.groups = read_group_data(data)
+
     # normalize data
     for mdl in mdls:
-        mdl["wg_stype"] = "WGStyle%d" % (wgs[mdl["wg_type"]]["type"])
+        mdl["wg_stype"] = "WGStyle%d" % (d.workgroups[mdl["wg_type"]]["type"])
 
 
-    return mdls, teams, wgs, cfg
+    return mdls, d
 
 
 def randomString(stringLength=10):
@@ -239,10 +311,10 @@ def relayout_items(items, start_x, end_y):
 
 def distribute_horizontal(items, start_x, padding):
     # sort items by sort order
-    items.sort(key=lambda x: x['order'])
+    items.sort(key=lambda x: x.order)
     for item in items:
-        item["x"] = start_x
-        start_x += item["w"] + padding
+        item.x = start_x
+        start_x += item.w + padding
 
 
 def move_workgroup_to(wg, start_x, start_y):
@@ -298,22 +370,28 @@ def layout_workgroup(wgs):
     return by_team
 
 
-def create_layout(items, wgs_byteam, teams):
+def create_layout(items, wgs_byteam, data):
     root = {}
     layers = {}
     for item in items:
         team_code = item["team"]
-        team_info = teams[team_code]
+        team_info = data.teams[team_code]
         if team_code not in root:
-            root[team_code] = {
-                "id": randomString(),
-                "display_name": team_info["display_name"],
-                "style": team_info["style"],
-                "code": team_code,
-                "type": "team",
-                "order": team_info["sort_order"],
-                "groups": {},
-            }
+            t = Team()
+            t.display_name = team_info["display_name"]
+            t.style = team_info["style"]
+            t.code = team_code
+            t.order = team_info["sort_order"]
+            root[team_code] = t
+            # {
+            #     "id": randomString(),
+            #     "display_name": team_info["display_name"],
+            #     "style": team_info["style"],
+            #     "code": team_code,
+            #     "type": "team",
+            #     "order": team_info["sort_order"],
+            #     "groups": {},
+            # }
         team = root[team_code]
 
         layer = team_info["layer"]
@@ -325,14 +403,14 @@ def create_layout(items, wgs_byteam, teams):
             r_layer.append(team)
 
         group_code = item["group"]
-        if group_code not in team["groups"]:
-            team["groups"][group_code] = {
+        if group_code not in team.groups:
+            team.groups[group_code] = {
                 "id": randomString(),
-                "display_name": group_code,
+                "display_name": data.groups[group_code]["display_name"],
                 "type":"group",
                 "items":[],
             }
-        group = team["groups"][group_code]
+        group = team.groups[group_code]
         item["id"] = randomString()
         group["items"].append(item)
 
@@ -343,11 +421,11 @@ def create_layout(items, wgs_byteam, teams):
 
     # first pass, layout all items inside group
     for team in root.values():
-        team["x"] = start_x
-        team["y"] = start_y
+        team.x = start_x
+        team.y = start_y
         max_w = 0
         max_h = 0
-        for group in team["groups"].values():
+        for group in team.groups.values():
             start_x = start_x + group_padding_left
             g_y = start_y + header_height
             w, h = layout_items(group["items"], start_x + padding_left, g_y + header_height)
@@ -358,10 +436,10 @@ def create_layout(items, wgs_byteam, teams):
             group["w"] = g_w
             group["h"] = g_h
             start_x = start_x + g_w
-            max_w = max(max_w, start_x - team["x"])
+            max_w = max(max_w, start_x - team.x)
             max_h = max(max_h, g_h)
-        team["w"] = max_w + group_padding_right
-        team["h"] = max_h + header_height + group_padding_bottom
+        team.w = max_w + group_padding_right
+        team.h = max_h + header_height + group_padding_bottom
 
         start_x = start_x + padding_left + padding_right # next team
 
@@ -373,12 +451,12 @@ def create_layout(items, wgs_byteam, teams):
 
         max_h = 0
         for team in layers[l]:
-            max_h = max(max_h, team["h"])
+            max_h = max(max_h, team.h)
 
         for team in layers[l]:
-            start_y = max(team["y"], start_y)
-            team["y"] = start_y
-            team["h"] = max_h
+            start_y = max(team.y, start_y)
+            team.y = start_y
+            team.h = max_h
     
         start_y = start_y + max_h + group_padding_bottom * 3
 
@@ -390,15 +468,15 @@ def create_layout(items, wgs_byteam, teams):
 
     # third pass, rebalance groups, make sure all groups have equal height
     for team in root.values():
-        start_x = team["x"] + group_padding_left
+        start_x = team.x + group_padding_left
         max_h = 0
-        for group in team["groups"].values():
+        for group in team.groups.values():
             max_h = max(max_h, group["h"])
 
-        for group in team["groups"].values():
-            h = team["h"] - header_height - group_padding_bottom
-            start_y = team["y"] + header_height
-            start_y = team["y"] + team["h"] - group_padding_bottom - max_h
+        for group in team.groups.values():
+            h = team.h - header_height - group_padding_bottom
+            start_y = team.y + header_height
+            start_y = team.y + team.h - group_padding_bottom - max_h
             group["x"] = start_x
             group["y"] = start_y
             group["h"] = max_h
@@ -407,13 +485,13 @@ def create_layout(items, wgs_byteam, teams):
             w = group["w"]
             start_x = start_x + w + group_padding_right
 
-        move_workgroup_to(wgs_byteam[team["code"]], team["x"] - 120, team["y"])
+        move_workgroup_to(wgs_byteam[team.code], team.x - 120, team.y)
 
     # flat out
     all_items = []
     for team in root.values():
         all_items.append(team)
-        for group in team["groups"].values():
+        for group in team.groups.values():
             all_items.append(group)
             all_items = all_items + group["items"]
 
@@ -444,12 +522,12 @@ def main():
 
     template = env.get_template('corepayment.tmpl')
 
-    mdls, teams, wgs, cfg = read_data(args.team_path)
+    mdls, d = read_data(args.team_path)
 
-    wgs_byteam = layout_workgroup(wgs)
-    all = create_layout(mdls, wgs_byteam, teams)
+    wgs_byteam = layout_workgroup(d.workgroups)
+    all = create_layout(mdls, wgs_byteam, d)
 
-    print(template.render(items=all, configs=cfg))
+    print(template.render(items=all, configs=d.configurations))
 
 
 if __name__ == "__main__":
