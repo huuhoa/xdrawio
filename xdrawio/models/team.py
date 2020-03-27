@@ -6,13 +6,6 @@ class Module(Shape):
         self.type = "module"
 
 
-class Group(Shape):
-    def __init__(self):
-        super().__init__()
-        self.type = "group"
-        self.items = []
-
-
 class Team(Shape):
     def __init__(self):
         super().__init__()

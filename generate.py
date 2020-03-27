@@ -318,7 +318,7 @@ def layout_workgroup(wgs):
 
 
 def create_layout(items, wgs_byteam, data):
-    from xdrawio.models import Team
+    from xdrawio.models import Team, Group
 
     root = {}
     layers = {}
@@ -353,15 +353,12 @@ def create_layout(items, wgs_byteam, data):
 
         group_code = item["group"]
         if group_code not in team.groups:
-            team.groups[group_code] = {
-                "id": xdrawio.randomString(),
-                "display_name": data.groups[group_code]["display_name"],
-                "type":"group",
-                "items":[],
-            }
+            g = Group()
+            g.display_name = data.groups[group_code]["display_name"]
+            team.groups[group_code] = g
         group = team.groups[group_code]
         item["id"] = xdrawio.randomString()
-        group["items"].append(item)
+        group.items.append(item)
 
     start_x = 0
     start_y = 300
@@ -377,13 +374,13 @@ def create_layout(items, wgs_byteam, data):
         for group in team.groups.values():
             start_x = start_x + group_padding_left
             g_y = start_y + header_height
-            w, h = layout_items(group["items"], start_x + padding_left, g_y + header_height)
-            group["x"] = start_x
-            group["y"] = g_y
+            w, h = layout_items(group.items, start_x + padding_left, g_y + header_height)
+            group.x = start_x
+            group.y = g_y
             g_w =  w + group_padding_left + group_padding_right
             g_h = h + header_height + group_padding_bottom
-            group["w"] = g_w
-            group["h"] = g_h
+            group.w = g_w
+            group.h = g_h
             start_x = start_x + g_w
             max_w = max(max_w, start_x - team.x)
             max_h = max(max_h, g_h)
@@ -420,18 +417,18 @@ def create_layout(items, wgs_byteam, data):
         start_x = team.x + group_padding_left
         max_h = 0
         for group in team.groups.values():
-            max_h = max(max_h, group["h"])
+            max_h = max(max_h, group.h)
 
         for group in team.groups.values():
             h = team.h - header_height - group_padding_bottom
             start_y = team.y + header_height
             start_y = team.y + team.h - group_padding_bottom - max_h
-            group["x"] = start_x
-            group["y"] = start_y
-            group["h"] = max_h
+            group.x = start_x
+            group.y = start_y
+            group.h = max_h
 
-            relayout_items(group["items"], start_x + padding_left, start_y + max_h - group_padding_bottom)
-            w = group["w"]
+            relayout_items(group.items, start_x + padding_left, start_y + max_h - group_padding_bottom)
+            w = group.w
             start_x = start_x + w + group_padding_right
 
         move_workgroup_to(wgs_byteam[team.code], team.x - 120, team.y)
@@ -442,7 +439,7 @@ def create_layout(items, wgs_byteam, data):
         all_items.append(team)
         for group in team.groups.values():
             all_items.append(group)
-            all_items = all_items + group["items"]
+            all_items = all_items + group.items
 
     for wg in wgs_byteam.values():
         for i in range(5):
