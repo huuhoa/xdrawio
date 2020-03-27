@@ -1,0 +1,191 @@
+import xdrawio
+
+def read_team_data(data):
+    td = {}
+    header = None
+    for row in data:
+        # Get a list of all columns in each row
+        cols = []
+        for col in row:
+            cols.append(col.value)
+
+        if header is None:
+            header = cols
+            continue
+
+        td[cols[0]] = {
+            "layer": cols[2],
+            "display_name": xdrawio.encode_name(cols[1]),
+            "style": cols[3],
+            "sort_order": cols[4],
+        }
+    
+    return td
+
+
+class Data(object):
+    def __init__(self):
+        super().__init__()
+        self.teams = {}
+        self.groups = {}
+        self.workgroups = {}
+        self.configurations = {}
+
+
+def read_group_data(data):
+    d = {}
+    header = None
+    for row in data:
+        # Get a list of all columns in each row
+        cols = []
+        for col in row:
+            cols.append(col.value)
+
+        if header is None:
+            header = cols
+            continue
+
+        d[cols[0]] = {
+            "display_name": xdrawio.encode_name(cols[1]),
+            # "layer": cols[2],
+            # "style": cols[3],
+            # "sort_order": cols[4],
+        }
+
+    return d
+
+
+def read_configuration_data(wb):
+    ws = wb["Configuration"]
+    for tbl in ws._tables:
+        if tbl.name == "Configuration":
+            data = ws[tbl.ref]
+            break
+
+    cfg = {}
+    header = None
+    for row in data:
+        # Get a list of all columns in each row
+        cols = []
+        for col in row:
+            cols.append(col.value)
+
+        if header is None:
+            header = cols
+        else:
+            cfg[cols[0]] = cols[1]
+
+    return cfg
+
+
+def read_workgroup_data(data):
+    wgs = {}
+    header = None
+    for row in data:
+        # Get a list of all columns in each row
+        cols = []
+        for col in row:
+            cols.append(col.value)
+
+        if header is None:
+            header = cols
+            continue
+
+        # skip empty line
+        if cols[0] == "" or cols[0] is None:
+            continue
+
+        col3 = cols[3]
+        if col3 is None:
+            col3 = ""
+
+        wgs[cols[0]] = {
+            "type": cols[1],
+            "team": cols[2],
+            "members": col3.split(","),
+        }
+    return wgs
+
+
+def read_module_data(data):
+    mdls = []
+    header = None
+    for row in data:
+        # Get a list of all columns in each row
+        cols = []
+        for col in row:
+            cols.append(col.value)
+
+        if header is None:
+            header = cols
+        else:
+            mdl = {
+                "team": cols[0],
+                "group": cols[1],
+                "display_name": xdrawio.encode_name(cols[2]),
+                "wg_type": cols[3],
+                "status": convert_status(cols[4]),
+                "sub_group": cols[5],
+                "progress": convert_progress(cols[6]),
+                "type": "module",
+            }
+            mdls.append(mdl)
+    return mdls
+
+
+def convert_progress(progress):
+    if progress is None:
+        return 0
+    return progress
+
+
+def convert_status(status):
+    if status == "Not Started":
+        return "StatusStyle0"
+    if status == "In Progress":
+        return "StatusStyle1"
+    if status == "Completed":
+        return "StatusStyle2"
+    
+    return "StatusStyleU"
+
+
+def read_data(file_path):
+    # Reading an excel file using Python 
+    import openpyxl
+
+    d = Data()
+
+    # To open Workbook 
+    wb = openpyxl.load_workbook(file_path)
+
+    d.configurations = read_configuration_data(wb)
+
+    ws = wb["Teams"]
+    
+    # For row 0 and column 0 
+    for tbl in ws._tables:
+        # print(tbl.name)
+        # Grab the 'data' from the table
+        data = ws[tbl.ref]
+        if tbl.name == "Teams":
+            d.teams = read_team_data(data)
+
+        if tbl.name == "WorkGroups":
+            d.workgroups = read_workgroup_data(data)
+            # print(wgs)
+
+        if tbl.name == "Modules":
+            mdls = read_module_data(data)
+            # print(mdls)
+
+        if tbl.name == "Groups":
+            d.groups = read_group_data(data)
+
+    # normalize data
+    for mdl in mdls:
+        mdl["wg_stype"] = "WGStyle%d" % (d.workgroups[mdl["wg_type"]]["type"])
+
+
+    return mdls, d
+

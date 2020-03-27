@@ -4,3 +4,4 @@ __copyright__ = '2020, NGUYEN Huu Hoa'
 __license__ = 'MIT'
 
 from .utils import *
+from .dataloader import read_data
