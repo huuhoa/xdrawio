@@ -30,6 +30,7 @@ class Data(object):
         self.groups = {}
         self.workgroups = {}
         self.configurations = {}
+        self.layoutspec = {}
 
 
 def read_group_data(data):
@@ -51,6 +52,19 @@ def read_group_data(data):
             # "style": cols[3],
             # "sort_order": cols[4],
         }
+
+    return d
+
+
+def read_layout_specification(data):
+    d = {}
+    for row in data:
+        # Get a list of all columns in each row
+        cols = []
+        for col in row:
+            cols.append(col.value)
+
+        d[cols[0]] = cols[1]
 
     return d
 
@@ -162,6 +176,10 @@ def read_data(file_path):
 
         if tbl.name == "Groups":
             d.groups = read_group_data(data)
+
+        if tbl.name == "LayoutSpecs":
+            d.layoutspec = read_layout_specification(data)
+            # print(d.layoutspec)
 
     # normalize data
     for mdl in mdls:
