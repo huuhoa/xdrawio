@@ -20,8 +20,8 @@ def layout_items(items, start_x, start_y):
     height = 0
     overflow_w = 0
     for item in items:
-        item["x"] = x
-        item["y"] = y
+        item.x = x
+        item.y = y
         column = (column + 1) % 3
         if column == 0:
             row = row + 1
@@ -51,12 +51,12 @@ def relayout_items(items, start_x, end_y):
     column = 0
     min_x = 10000000
     for item in items:
-        min_x = min(min_x, item["x"])
+        min_x = min(min_x, item.x)
 
     offset_x = min_x - start_x
     for item in items:
-        item["x"] = item["x"] - offset_x
-        item["y"] = y - item_height
+        item.x = item.x - offset_x
+        item.y = y - item_height
         column = (column + 1) % 3
         if column == 0:
             y -= item_height + padding_bottom
@@ -129,7 +129,7 @@ def create_layout(items, wgs_byteam, data):
     root = {}
     layers = {}
     for item in items:
-        team_code = item["team"]
+        team_code = item.team
         team_info = data.teams[team_code]
         if team_code not in root:
             t = Team()
@@ -157,13 +157,12 @@ def create_layout(items, wgs_byteam, data):
         if team not in r_layer:
             r_layer.append(team)
 
-        group_code = item["group"]
+        group_code = item.group
         if group_code not in team.groups:
             g = Group()
             g.display_name = data.groups[group_code]["display_name"]
             team.groups[group_code] = g
         group = team.groups[group_code]
-        item["id"] = xdrawio.randomString()
         group.items.append(item)
 
     start_x = 0

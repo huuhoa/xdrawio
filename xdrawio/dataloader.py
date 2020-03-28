@@ -108,6 +108,8 @@ def read_workgroup_data(data):
 
 
 def read_module_data(data):
+    from xdrawio.datatypes import Module
+
     mdls = []
     header = None
     for row in data:
@@ -119,35 +121,14 @@ def read_module_data(data):
         if header is None:
             header = cols
         else:
-            mdl = {
-                "team": cols[0],
-                "group": cols[1],
-                "display_name": xdrawio.encode_name(cols[2]),
-                "wg_type": cols[3],
-                "status": convert_status(cols[4]),
-                "sub_group": cols[5],
-                "progress": convert_progress(cols[6]),
-                "type": "module",
-            }
+            mdl = Module(cols[2], cols[4], cols[6])
+            mdl.team = cols[0]
+            mdl.group = cols[1]
+            mdl.wg_type = cols[3]
+            mdl.sub_group = cols[5]
             mdls.append(mdl)
+
     return mdls
-
-
-def convert_progress(progress):
-    if progress is None:
-        return 0
-    return progress
-
-
-def convert_status(status):
-    if status == "Not Started":
-        return "StatusStyle0"
-    if status == "In Progress":
-        return "StatusStyle1"
-    if status == "Completed":
-        return "StatusStyle2"
-    
-    return "StatusStyleU"
 
 
 def read_data(file_path):
@@ -184,7 +165,7 @@ def read_data(file_path):
 
     # normalize data
     for mdl in mdls:
-        mdl["wg_stype"] = "WGStyle%d" % (d.workgroups[mdl["wg_type"]]["type"])
+        mdl.wg_stype = "WGStyle%d" % (d.workgroups[mdl.wg_type]["type"])
 
 
     return mdls, d
