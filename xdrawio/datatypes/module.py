@@ -2,6 +2,9 @@ from xdrawio.datatypes import Shape
 import xdrawio
 
 class Module(Shape):
+    item_height = 50
+    item_width = 180
+
     def __init__(self, display_name, status, progress):
         super().__init__()
         self.type = "module"
@@ -12,6 +15,8 @@ class Module(Shape):
         self.status = convert_status(status)
         self.sub_group = ""
         self.progress = convert_progress(progress)
+        self.w = self.item_width
+        self.h = self.item_height
 
 
 def convert_progress(progress):

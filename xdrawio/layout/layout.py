@@ -1,4 +1,6 @@
 import xdrawio
+from .parser import ParseSpec
+from xdrawio.layout.stack import FixLayout, HStack
 
 header_height = 100
 item_height = 50
@@ -9,65 +11,6 @@ padding_right = 20
 group_padding_left = 20
 group_padding_right = 20
 group_padding_bottom = 20
-
-
-def layout_items(items, start_x, start_y):
-    x = start_x
-    y = start_y
-    column = 0
-    row = 0
-    width = 0
-    height = 0
-    overflow_w = 0
-    for item in items:
-        item.x = x
-        item.y = y
-        column = (column + 1) % 3
-        if column == 0:
-            row = row + 1
-            y += item_height + padding_bottom
-            x = start_x
-            overflow_w = item_width
-        else:
-            x += item_width + padding_left
-
-        width = max(width, x - start_x)
-        height = max(height, y - start_y)
-    
-    if column == 0:
-        # full row
-        height -= item_height + padding_bottom
-    if overflow_w == 0 and column != 0:
-        overflow_w = -padding_left
-
-    width += overflow_w
-    height += item_height
-
-    return width, height
-
-
-def relayout_items(items, start_x, end_y):
-    y = end_y
-    column = 0
-    min_x = 10000000
-    for item in items:
-        min_x = min(min_x, item.x)
-
-    offset_x = min_x - start_x
-    for item in items:
-        item.x = item.x - offset_x
-        item.y = y - item_height
-        column = (column + 1) % 3
-        if column == 0:
-            y -= item_height + padding_bottom
-
-
-def distribute_horizontal(items, start_x, padding):
-    # sort items by sort order
-    items.sort(key=lambda x: x.order)
-    for item in items:
-        item.x = start_x
-        start_x += item.w + padding
 
 
 def move_workgroup_to(wg, start_x, start_y):
@@ -122,133 +65,136 @@ def layout_workgroup(wgs):
 
     return by_team
 
+class GroupLayout(object):
+    def __init__(self, group):
+        super().__init__()
+        self.group = group
 
-def create_layout(items, wgs_byteam, data):
-    from xdrawio.datatypes import Team, Group
+    def layout_children(self):
+        start_x = self.group.x + padding_left
+        y = self.group.y + self.group.h - group_padding_bottom - item_height
+        column = 0
+        x = start_x
+        for item in self.group.items:
+            item.x = x
+            item.y = y
+            column = (column + 1) % 3
+            if column == 0:
+                y -= item_height + padding_bottom
+                x = start_x
+            else:
+                x += item_width + padding_left
 
-    root = {}
-    layers = {}
-    for item in items:
-        team_code = item.team
-        team_info = data.teams[team_code]
-        if team_code not in root:
-            t = Team()
-            t.display_name = team_info["display_name"]
-            t.style = team_info["style"]
-            t.code = team_code
-            t.order = team_info["sort_order"]
-            root[team_code] = t
-            # {
-            #     "id": randomString(),
-            #     "display_name": team_info["display_name"],
-            #     "style": team_info["style"],
-            #     "code": team_code,
-            #     "type": "team",
-            #     "order": team_info["sort_order"],
-            #     "groups": {},
-            # }
-        team = root[team_code]
 
-        layer = team_info["layer"]
-        if layer not in layers:
-            layers[layer] = []
+class TeamLayout(object):
+    def __init__(self, team, layoutspec):
+        super().__init__()
+        self.team = team
+        self.layoutspec = layoutspec
+        
+        if self.layoutspec is not None:
+            self.ls = ParseSpec(self.layoutspec)
+        else:
+            # default layout
+            self.ls = HStack()
+            for group in self.team.groups.values():
+                self.ls.items.append(FixLayout(group.code))
 
-        r_layer = layers[layer]
-        if team not in r_layer:
-            r_layer.append(team)
+    def measure(self):
+        self.ls.layout_children(self.team.groups)
+        self.team.w = self.ls.w + group_padding_left + group_padding_right
+        self.team.h = self.ls.h + header_height + group_padding_bottom
 
-        group_code = item.group
-        if group_code not in team.groups:
-            g = Group()
-            g.display_name = data.groups[group_code]["display_name"]
-            team.groups[group_code] = g
-        group = team.groups[group_code]
-        group.items.append(item)
-
-    start_x = 0
-    start_y = 300
-
-    wg_padding = 180
-
-    # first pass, layout all items inside group
-    for team in root.values():
-        team.x = start_x
-        team.y = start_y
-        max_w = 0
+    def layout_children(self):
+        start_x = self.team.x + group_padding_left
         max_h = 0
-        for group in team.groups.values():
-            start_x = start_x + group_padding_left
-            g_y = start_y + header_height
-            w, h = layout_items(group.items, start_x + padding_left, g_y + header_height)
-            group.x = start_x
-            group.y = g_y
-            g_w =  w + group_padding_left + group_padding_right
-            g_h = h + header_height + group_padding_bottom
-            group.w = g_w
-            group.h = g_h
-            start_x = start_x + g_w
-            max_w = max(max_w, start_x - team.x)
-            max_h = max(max_h, g_h)
-        team.w = max_w + group_padding_right
-        team.h = max_h + header_height + group_padding_bottom
-
-        start_x = start_x + padding_left + padding_right # next team
-
-    # second pass, rebalance teams, make sure all teams have equal height
-    start_y = 0
-    for l in sorted(layers.keys(), reverse = True):
-        start_x = 120 + 80
-        distribute_horizontal(layers[l], start_x, group_padding_right + wg_padding)
-
-        max_h = 0
-        for team in layers[l]:
-            max_h = max(max_h, team.h)
-
-        for team in layers[l]:
-            start_y = max(team.y, start_y)
-            team.y = start_y
-            team.h = max_h
-    
-        start_y = start_y + max_h + group_padding_bottom * 3
-
-    # max_h = 0
-    # for team in root.values():
-    #     max_h = max(max_h, team["h"])
-    # for team in root.values():
-    #     team["h"] = max_h
-
-    # third pass, rebalance groups, make sure all groups have equal height
-    for team in root.values():
-        start_x = team.x + group_padding_left
-        max_h = 0
-        for group in team.groups.values():
+        for group in self.team.groups.values():
             max_h = max(max_h, group.h)
 
-        for group in team.groups.values():
-            h = team.h - header_height - group_padding_bottom
-            start_y = team.y + header_height
-            start_y = team.y + team.h - group_padding_bottom - max_h
-            group.x = start_x
-            group.y = start_y
-            group.h = max_h
+        # group placement
 
-            relayout_items(group.items, start_x + padding_left, start_y + max_h - group_padding_bottom)
-            w = group.w
-            start_x = start_x + w + group_padding_right
+        self.ls.layout_children(self.team.groups)
+        self.team.w = self.ls.w + group_padding_left + group_padding_right
+        self.team.h = self.ls.h + header_height + group_padding_bottom
+        # print(ls)
 
+        group_dict = self.ls.to_dict()
+        # print(group_dict)
+
+        start_y = self.team.y + header_height
+        for group in self.team.groups.values():
+            g = group_dict[group.code]
+            group.x = g.x + start_x
+            group.y = g.y + start_y
+            group.w = g.w
+            group.h = g.h
+
+        # for group in self.team.groups.values():
+        #     start_y = self.team.y + self.team.h - group_padding_bottom - max_h
+        #     group.x = start_x
+        #     group.y = start_y
+        #     group.h = max_h
+
+        #     start_x = start_x + group.w + group_padding_right
+
+        for group in self.team.groups.values():
+            gl = GroupLayout(group)
+            gl.layout_children()
+
+
+class PageLayout(object):
+    def __init__(self, page, layoutspec):
+        super().__init__()
+        self.page = page
+        self.layoutspec = layoutspec
+        self.children = []
+        for team in self.page.teams.values():
+            self.children.append(TeamLayout(team, self.layoutspec.get(team.code)))
+
+    def distribute_horizontal(self, items, start_x, padding):
+        # sort items by sort order
+        items.sort(key=lambda x: x.order)
+        for item in items:
+            item.x = start_x
+            start_x += item.w + padding
+
+    def measure(self):
+        self.page.measure()
+        for tl in self.children:
+            tl.measure()
+
+    def layout_children(self):
+        wg_padding = 180
+
+        # second pass, rebalance teams, make sure all teams have equal height
+        start_y = 300
+        for l in sorted(self.page.layers.keys(), reverse = True):
+            start_x = 120 + 80
+            self.distribute_horizontal(self.page.layers[l], start_x, group_padding_right + wg_padding)
+
+            max_h = 0
+            for team in self.page.layers[l]:
+                max_h = max(max_h, team.h)
+
+            for team in self.page.layers[l]:
+                start_y = max(team.y, start_y)
+                team.y = start_y
+                team.h = max_h
+        
+            start_y = start_y + max_h + group_padding_bottom * 3
+
+        # third pass, rebalance groups, make sure all groups have equal height
+        for tl in self.children:
+            tl.layout_children()
+
+
+def create_layout(page, wgs_byteam, data):
+    from xdrawio.datatypes import Team, Group
+
+    # first pass, layout all items inside group
+    pl = PageLayout(page, data.layoutspec)
+    pl.measure()
+    pl.layout_children()
+    # fourth pass, move working group to top-left of each team
+    for team in page.teams.values():
         move_workgroup_to(wgs_byteam[team.code], team.x - 120, team.y)
-
-    # flat out
-    all_items = []
-    for team in root.values():
-        all_items.append(team)
-        for group in team.groups.values():
-            all_items.append(group)
-            all_items = all_items + group.items
-
-    for wg in wgs_byteam.values():
-        for i in range(5):
-            all_items.append(wg[i])
-
-    # print(all_items)
-    return all_items
