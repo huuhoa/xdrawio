@@ -18,7 +18,7 @@ def cvtV(toks):
 def cvtIdentity(toks):
     return FixLayout(toks[0])
 
-def parseLayoutSpec(spec):
+def _layoutDSL():
     # define punctuation as suppressed literals
     lparen, rparen, lbrack, rbrack, lbrace, rbrace, colon, comma = map(
         pp.Suppress, "()[]{}:,"
@@ -44,5 +44,10 @@ def parseLayoutSpec(spec):
     hStr.setParseAction(cvtH)
     vStr.setParseAction(cvtV)
 
+    return layoutItem
+
+layoutItem = _layoutDSL()
+
+def parseLayoutSpec(spec):
     result = layoutItem.parseString(spec)
     return result[0]

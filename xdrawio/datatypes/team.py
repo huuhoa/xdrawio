@@ -14,6 +14,7 @@ class Team(Shape):
         self.style = ""
         self.order = 0
         self.code = ""
+        self.workgroup = {}
 
     def measure(self):
         max_w = 0
@@ -26,7 +27,17 @@ class Team(Shape):
             group.h = h
 
         group_count = len(self.groups)
-        max_w = max_w + Team.padding_horizontal * (2 + group_count - 1)
+        max_w = max_w + Team.padding_horizontal * (2 + group_count - 1) + 200
         max_h = max_h + Team.header_height + Team.padding_bottom
         return max_w, max_h
 
+    def boundary(self):
+        from collections import namedtuple
+        T = namedtuple('T', 'id x y w h type style display_name')
+        return T(self.id, 
+            self.x + 120,
+            self.y,
+            self.w - 200,
+            self.h,
+            self.type, self.style, self.display_name
+        )

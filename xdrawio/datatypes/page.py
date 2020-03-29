@@ -15,7 +15,7 @@ class Page(Shape):
         self.layers = {}    # layers of teams
         self.teams = {}     # dictionary of teams for quick access
 
-    def initialize(self, mdls, data):
+    def initialize(self, mdls, data, wgs_byteam):
         """ initialize page data
 
         input:
@@ -39,6 +39,7 @@ class Page(Shape):
                 t.style = team_info["style"]
                 t.code = team_code
                 t.order = team_info["sort_order"]
+                t.workgroup = wgs_byteam[team_code]
                 self.teams[team_code] = t
 
             team = self.teams[team_code]
@@ -69,11 +70,14 @@ class Page(Shape):
         """
         all_items = []
         for team in self.teams.values():
-            all_items.append(team)
+            all_items.append(team.boundary())
+            for wg in team.workgroup.values():
+                all_items.append(wg)
             for group in team.groups.values():
                 all_items.append(group)
                 all_items = all_items + group.items
-        
+
+        # print(all_items)
         return all_items
 
     def measure(self):

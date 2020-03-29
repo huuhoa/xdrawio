@@ -55,7 +55,7 @@ class XStack(Layout):
     def to_dict(self, parent_x=0, parent_y=0):
         result = {}
         for i in self.items:
-            result.update(i.to_dict(self.x, self.y))
+            result.update(i.to_dict(self.x + parent_x, self.y + parent_y))
         return result
 
 

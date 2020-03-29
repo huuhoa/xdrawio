@@ -15,4 +15,6 @@ class Shape(object):
         raise NotImplementedError
 
     def __repr__(self):
-        return "{" + "dp:'{display_name}', type:{type}, x:{x}, y:{y}, w:{w}, h:{h}".format(**self.__dict__) + "}"
+        return "{" + "dp:'{}', type:{}, x:{}, y:{}, w:{}, h:{}".format(
+            self.display_name, self.type, self.x, self.x, self.w, self.h
+        ) + "}"
