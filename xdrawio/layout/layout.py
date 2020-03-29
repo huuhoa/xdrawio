@@ -1,5 +1,5 @@
 import xdrawio
-from .parser import ParseSpec
+from .parser import ParseSpec, parseLayoutSpec
 from xdrawio.layout.stack import FixLayout, HStack
 
 header_height = 100
@@ -93,7 +93,7 @@ class TeamLayout(object):
         self.layoutspec = layoutspec
         
         if self.layoutspec is not None:
-            self.ls = ParseSpec(self.layoutspec)
+            self.ls = parseLayoutSpec(self.layoutspec)
         else:
             # default layout
             self.ls = HStack()
