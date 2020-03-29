@@ -5,9 +5,10 @@ class Module(Shape):
     item_height = 50
     item_width = 180
 
+    type = "module"
+
     def __init__(self, display_name, status, progress):
         super().__init__()
-        self.type = "module"
         self.display_name = xdrawio.encode_name(display_name)
         self.team = ""
         self.group = ""

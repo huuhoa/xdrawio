@@ -121,8 +121,14 @@ def read_workgroup_data(data):
     return wgs
 
 
-def read_module_data(data):
+def read_module_data(wb):
     from xdrawio.datatypes import Module
+
+    ws = wb["Modules"]
+    for tbl in ws._tables:
+        if tbl.name == "Modules":
+            data = ws[tbl.ref]
+            break
 
     mdls = []
     header = None
@@ -170,10 +176,6 @@ def read_data(file_path):
             d.workgroups = read_workgroup_data(data)
             # print(wgs)
 
-        if tbl.name == "Modules":
-            mdls = read_module_data(data)
-            # print(mdls)
-
         if tbl.name == "Groups":
             d.groups = read_group_data(data)
 
@@ -181,6 +183,7 @@ def read_data(file_path):
             d.layoutspec = read_layout_specification(data)
             # print(d.layoutspec)
 
+    mdls = read_module_data(wb)
     # normalize data
     for mdl in mdls:
         mdl.wg_stype = "WGStyle%d" % (d.workgroups[mdl.wg_type]["type"])

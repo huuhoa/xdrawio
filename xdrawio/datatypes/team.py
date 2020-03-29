@@ -5,9 +5,10 @@ class Team(Shape):
     padding_bottom = 20
     padding_horizontal = 20
 
+    type = "team"
+
     def __init__(self):
         super().__init__()
-        self.type = "team"
         self.groups = {}
         self.layer = 0
         self.style = ""

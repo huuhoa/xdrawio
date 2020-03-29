@@ -10,9 +10,10 @@ class Group(Shape):
     group_padding_right = 20
     group_padding_bottom = 20
 
+    type = "group"
+
     def __init__(self):
         super().__init__()
-        self.type = "group"
         self.code = ""
         self.items = []
 

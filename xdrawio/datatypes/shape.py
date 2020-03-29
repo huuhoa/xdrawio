@@ -1,6 +1,7 @@
 from xdrawio import randomString
 
 class Shape(object):
+    type = "unknnown"
     def __init__(self):
         self.id = randomString()
         self.x = 0
@@ -8,7 +9,6 @@ class Shape(object):
         self.w = 0
         self.h = 0
         self.display_name = ""
-        self.type = "unknnown"
 
     def measure(self):
         """ performs measurement on Shape object to determine expected width and height """

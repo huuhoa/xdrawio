@@ -8,9 +8,10 @@ class Page(Shape):
         - each group contains list of modules
     """
 
+    type = "page"
+
     def __init__(self):
         super().__init__()
-        self.type = "page"
         self.layers = {}    # layers of teams
         self.teams = {}     # dictionary of teams for quick access
 
