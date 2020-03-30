@@ -1,6 +1,6 @@
 
-from xdrawio.layout.parser import parseLayoutSpec
-from xdrawio.layout.team import TeamLayout
+from .layoutparser import parseLayoutSpec
+from .teamlayout import TeamLayout
 
 class PageLayout(object):
     def __init__(self, page, layoutspec):

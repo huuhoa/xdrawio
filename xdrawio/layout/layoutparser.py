@@ -1,6 +1,6 @@
 import pyparsing as pp
 
-from .stack import *
+from .stacklayout import *
 
 def ParseSpec(layoutspec):
     return eval(layoutspec)

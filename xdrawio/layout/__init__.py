@@ -1,3 +1,3 @@
 from .layout import *
-from .team import TeamLayout
-from .page import PageLayout
+from .teamlayout import TeamLayout
+from .pagelayout import PageLayout

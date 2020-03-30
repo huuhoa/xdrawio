@@ -1,7 +1,7 @@
 
-from xdrawio.layout.parser import parseLayoutSpec
-from xdrawio.layout.stack import FixLayout, HStack
-from .group import GroupLayout
+from .layoutparser import parseLayoutSpec
+from .stacklayout import FixLayout, HStack
+from .grouplayout import GroupLayout
 
 class TeamLayout(object):
     header_height = 100

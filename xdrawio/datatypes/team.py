@@ -1,7 +1,4 @@
 from xdrawio.datatypes import Shape
-from xdrawio.layout.team import TeamLayout
-from collections import namedtuple
-
 
 class Team(Shape):
     type = "team"
