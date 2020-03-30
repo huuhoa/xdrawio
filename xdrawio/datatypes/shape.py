@@ -10,10 +10,6 @@ class Shape(object):
         self.h = 0
         self.display_name = ""
 
-    def measure(self):
-        """ performs measurement on Shape object to determine expected width and height """
-        raise NotImplementedError
-
     def __repr__(self):
         return "{" + "dp:'{}', type:{}, x:{}, y:{}, w:{}, h:{}".format(
             self.display_name, self.type, self.x, self.x, self.w, self.h

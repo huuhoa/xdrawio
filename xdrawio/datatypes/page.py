@@ -2,8 +2,7 @@ from xdrawio.datatypes import Shape
 
 class Page(Shape):
     r"""Page contains:
-        - list of layers: dict with key=layer number, value=layer
-        - each layer contains list of sorted teams
+        - list of teams
         - each team contains list of groups
         - each group contains list of modules
     """
@@ -12,7 +11,6 @@ class Page(Shape):
 
     def __init__(self):
         super().__init__()
-        self.layers = {}    # layers of teams
         self.teams = {}     # dictionary of teams for quick access
 
     def initialize(self, mdls, data, wgs_byteam):
@@ -35,22 +33,13 @@ class Page(Shape):
             team_info = data.teams[team_code]
             if team_code not in self.teams:
                 t = Team()
-                t.display_name = team_info["display_name"]
-                t.style = team_info["style"]
+                t.gbound.display_name = team_info["display_name"]
+                t.gbound.style = team_info["style"]
                 t.code = team_code
-                t.order = team_info["sort_order"]
                 t.workgroup = wgs_byteam[team_code]
                 self.teams[team_code] = t
 
             team = self.teams[team_code]
-
-            layer = team_info["layer"]
-            if layer not in self.layers:
-                self.layers[layer] = []
-
-            r_layer = self.layers[layer]
-            if team not in r_layer:
-                r_layer.append(team)
 
             group_code = item.group
             if group_code not in team.groups:
@@ -70,7 +59,7 @@ class Page(Shape):
         """
         all_items = []
         for team in self.teams.values():
-            all_items.append(team.boundary())
+            all_items.append(team.gbound)
             for wg in team.workgroup.values():
                 all_items.append(wg)
             for group in team.groups.values():
@@ -79,9 +68,3 @@ class Page(Shape):
 
         # print(all_items)
         return all_items
-
-    def measure(self):
-        for team in self.teams.values():
-            w, h = team.measure()
-            team.w = w
-            team.h = h

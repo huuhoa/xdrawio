@@ -17,7 +17,6 @@ def read_team_data(data):
             "layer": cols[2],
             "display_name": xdrawio.encode_name(cols[1]),
             "style": cols[3],
-            "sort_order": cols[4],
         }
     
     return td
@@ -48,9 +47,6 @@ def read_group_data(data):
 
         d[cols[0]] = {
             "display_name": xdrawio.encode_name(cols[1]),
-            # "layer": cols[2],
-            # "style": cols[3],
-            # "sort_order": cols[4],
         }
 
     return d

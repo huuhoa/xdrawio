@@ -39,6 +39,13 @@ class FixLayout(Layout):
         self.w = g.w
         self.h = g.h
 
+    def measure(self, data):
+        g = data.get(self.code, None)
+        if g is None:
+            return
+        self.w = g.w
+        self.h = g.h
+
     def to_dict(self, parent_x=0, parent_y=0):
         return {self.code: Rect(self.x + parent_x, self.y + parent_y, self.w, self.h)}
 
@@ -85,6 +92,19 @@ class HStack(XStack):
         for i in self.items:
             i.h = h
 
+    def measure(self, data):
+        for i in self.items:
+            i.measure(data)
+
+        w = 0
+        h = 0
+        for i in self.items:
+            w = w + i.w
+            h = max(h, i.h)
+
+        w = w + (len(self.items) - 1) * item_horizonal_padding
+        self.w = w
+        self.h = h
 
 class VStack(XStack):
     def __init__(self):
@@ -103,7 +123,7 @@ class VStack(XStack):
             h = h + i.h
             i.y = y
             y = y + i.h + item_vertical_padding
-     
+
         h = h + (len(self.items) - 1) * item_vertical_padding
         self.w = w
         self.h = h
@@ -111,6 +131,21 @@ class VStack(XStack):
         # make sure all items have same width -> strech mode
         for i in self.items:
             i.w = w
+
+    def measure(self, data):
+        for i in self.items:
+            i.measure(data)
+
+        w = 0
+        h = 0
+        for i in self.items:
+            w = max(w, i.w)
+            h = h + i.h
+
+        h = h + (len(self.items) - 1) * item_vertical_padding
+        self.w = w
+        self.h = h
+
 
 def H(*inputs):
     h = HStack()

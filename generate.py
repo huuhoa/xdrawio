@@ -33,14 +33,11 @@ def main():
     wgs_byteam = layout_workgroup(d.workgroups)
 
     page = Page()
-    page.initialize(mdls, d)
+    page.initialize(mdls, d, wgs_byteam)
 
     create_layout(page, wgs_byteam, d)
     # flat out
     all_items = page.flatten_tree()
-    for wg in wgs_byteam.values():
-        for i in range(5):
-            all_items.append(wg[i])
 
     if not args.debug:
         print(template.render(items=all_items, configs=d.configurations))
