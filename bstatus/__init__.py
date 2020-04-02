@@ -24,13 +24,9 @@ def read_column_data(wb):
             header = cols
             continue
 
-        td.append({
-            "step": cols[0],
-            "stage": cols[1],
-            "order": cols[2],
-        })
+        td.append({header[i]:cols[i] for i in range(len(cols))})
     
-    td.sort(key=lambda x: x["order"], reverse=False)
+    td.sort(key=lambda x: x["Sort Order"], reverse=False)
     return td
 
 
@@ -63,11 +59,11 @@ def read_banks_data(wb):
             continue
 
         bank_name = cols[0]
-        status = {header[i]:cols[i] for i in range(1, len(cols))}
+        info = {header[i]:cols[i] for i in range(1, len(cols))}
         bank = {}
         bank["id"] = randomString()
         bank["display_name"] = bank_name
-        bank["status"] = status
+        bank["info"] = info
         d[bank_name] = bank
 
     return d
@@ -114,34 +110,40 @@ def read_data(file_path):
 
 def flatten_data(data):
     all_items = []
-    start_x = 190
+
+    start_x = 0
     start_y = 270
     counter = 0
     stages = {}
 
     item_padding = 70
-
+    item_height = 40
+    x = start_x
+    all_items.append({
+        "type": "frame",
+        "w": len(data.column_stage) * item_padding,
+    })
     for step in data.column_stage:
         all_items.append({
             "id": "step-%d" % (counter),
-            "display_name": step["step"],
-            "x": 212.5 + counter * item_padding,
+            "display_name": step["Display Name"],
+            "x": start_x + 22.5 + counter * item_padding,
             "type": "step_label",
-            "h": len(data.banks) * 40 + 40,
+            "h": len(data.banks) * item_height + 40,
         })
-        if step["stage"] not in stages:
-            stages[step["stage"]] = {
-                "id": "stage-" + step["stage"],
-                "display_name": step["stage"].upper(), 
-                "x": start_x,
+        if step["Stage"] not in stages:
+            stages[step["Stage"]] = {
+                "id": "stage-" + step["Stage"],
+                "display_name": step["Stage"].upper(), 
+                "x": x,
                 "w": item_padding,
                 "type": "stage",
-                "style": data.configurations["Stage_%s" % step["stage"]],
+                "style": data.configurations["Stage_%s" % step["Stage"]],
             }
         else:
-            ss = stages[step["stage"]]
+            ss = stages[step["Stage"]]
             ss["w"] = ss["w"] + item_padding
-        start_x += item_padding
+        x += item_padding
         counter += 1
 
     for ss in stages.values():
@@ -159,24 +161,29 @@ def flatten_data(data):
             "h": 20,
             "type": "label",
             "parentid": b["id"],
-            "w": 120 + (len(data.column_stage) + 1) * item_padding
+            "w": 120 + len(data.column_stage) * item_padding + 40
         }
         bank.update(b)
         all_items.append(bank)
         counter = 0
-        status = b["status"]
+        info = b["info"]
         all_items.append({
             "type": "bank-line",
             "parentid": b["id"],
-            "w": (len(data.column_stage) + 1) * item_padding
+            "w": len(data.column_stage) * item_padding + 40
         })
+        status = info["Status"]
         for step in data.column_stage:
-            value = status[step["step"]]
+            if status == "Completed":
+                value = ""
+            else:
+                value = info[step["Step"]]
+
             if value is None:
                 style = data.configurations["StepStatus_NA"]
                 value = ""
             else:
-                style = data.configurations["StepStatus_%s" % step["stage"]]
+                style = data.configurations["StepStatus_%s" % step["Stage"]]
 
             all_items.append({
                 "id": "%s-%d" % (b["id"], counter),
@@ -188,6 +195,6 @@ def flatten_data(data):
             })
             counter += 1
 
-        start_y += 40
+        start_y += item_height
 
     return all_items
