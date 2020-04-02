@@ -21,10 +21,36 @@ def get_page_dimention(page_size, page_orientation):
     else:
         return 0, 0
 
-def main():
-    import argparse
+
+def load_team(path):
     from xdrawio.layout import create_layout, layout_workgroup
     from xdrawio.datatypes import Page
+
+    env = Environment(
+        loader=FileSystemLoader('./templates'),
+        autoescape=select_autoescape(['html', 'xml']),
+        trim_blocks = True,
+        lstrip_blocks = True,
+        line_statement_prefix='#',
+    )
+
+    template = env.get_template('corepayment.tmpl')
+
+    mdls, d = xdrawio.read_data(path)
+
+    wgs_byteam = layout_workgroup(d.workgroups)
+
+    page = Page()
+    page.initialize(mdls, d, wgs_byteam)
+
+    create_layout(page, wgs_byteam, d)
+    # flat out
+    all_items = page.flatten_tree()
+
+    return template, all_items, d.configurations
+
+def main():
+    import argparse
 
 
     parser = argparse.ArgumentParser(
@@ -57,38 +83,29 @@ def main():
         default='portrait'
     )
 
-    args = parser.parse_args()
-
-    env = Environment(
-        loader=FileSystemLoader('./templates'),
-        autoescape=select_autoescape(['html', 'xml']),
-        trim_blocks = True,
-        lstrip_blocks = True,
-        line_statement_prefix='#',
+    parser.add_argument(
+        '-t',
+        '--type',
+        type=str,
+        help='draw type, possible values: team, roadmap, bank_status',
+        default='team'
     )
 
-    template = env.get_template('corepayment.tmpl')
-
-    mdls, d = xdrawio.read_data(args.team_path)
-
-    wgs_byteam = layout_workgroup(d.workgroups)
-
-    page = Page()
-    page.initialize(mdls, d, wgs_byteam)
-
-    create_layout(page, wgs_byteam, d)
-    # flat out
-    all_items = page.flatten_tree()
+    args = parser.parse_args()
 
     w, h = get_page_dimention(args.page_size, args.page_orientation)
     page = {
         "width": w,
         "height": h
     }
+
+    if args.type == 'team':
+        template, items, configs = load_team(args.team_path)
+
     if not args.debug:
         print(template.render(
-                items=all_items,
-                configs=d.configurations,
+                items=items,
+                configs=configs,
                 page=page))
 
 
