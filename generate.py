@@ -11,6 +11,8 @@ def get_page_dimention(page_size, page_orientation):
         'A2': (4961, 7016),
         'A3': (3508, 4961),
         'A4': (2480, 3508),
+        'A5': (1754, 2480),
+        'A6': (1240, 1754),
     }
 
     ps = sizes[page_size]
@@ -49,6 +51,24 @@ def load_team(path):
 
     return template, all_items, d.configurations
 
+def load_bank_status(path):
+    import bstatus
+
+    env = Environment(
+        loader=FileSystemLoader('./templates'),
+        autoescape=select_autoescape(['html', 'xml']),
+        trim_blocks = True,
+        lstrip_blocks = True,
+        line_statement_prefix='#',
+    )
+
+    template = env.get_template('bank_status.tmpl')
+
+    data = bstatus.read_data(path)
+    all_items = bstatus.flatten_data(data)
+    return template, all_items, data.configurations
+
+
 def main():
     import argparse
 
@@ -58,7 +78,7 @@ def main():
         epilog='Enjoy!'
         )
     parser.version = "1.0"
-    parser.add_argument('team_path', metavar='path', type=str,
+    parser.add_argument('path', metavar='path', type=str,
                         help='path to xlsx file that contains team structure')
     parser.add_argument(
         '-d',
@@ -100,7 +120,10 @@ def main():
     }
 
     if args.type == 'team':
-        template, items, configs = load_team(args.team_path)
+        template, items, configs = load_team(args.path)
+
+    if args.type == 'bank_status':
+        template, items, configs = load_bank_status(args.path)
 
     if not args.debug:
         print(template.render(

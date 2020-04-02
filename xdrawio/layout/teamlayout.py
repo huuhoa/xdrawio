@@ -40,19 +40,26 @@ class TeamLayout(object):
         self.team.h = self.team.gbound.h
 
     def layout_children(self):
+        # first reposition workgroup and groups boundary
+
         # move workgroup
         move_workgroup_to(self.team.workgroup, self.team.x, self.team.y)
 
-        # first calculate the position and dimension of all groups
-        self.ls.layout_children(self.team.groups)
-
-        # second move all groups to respective position, resize all group
-        group_dict = self.ls.to_dict()
+        # resize and reposition groups boundary
         self.team.gbound.x = self.team.x + self.workgroup_width + self.workgroup_padding_right
         self.team.gbound.y = self.team.y
+        self.team.gbound.w = self.team.w - ((self.workgroup_width + self.workgroup_padding_right) + self.team_padding_right)
+        self.team.gbound.h = self.team.h
+
+        # second calculate the position and dimension of all groups
+        self.ls.layout_children(self.team.groups)
+
+        # third move all groups to respective position, resize all group
+        group_dict = self.ls.to_dict()
 
         start_x = self.team.gbound.x + self.group_padding_left
-        start_y = self.team.gbound.y + self.header_height
+        # start_y = self.team.gbound.y + self.header_height
+        start_y = self.team.gbound.y + self.team.gbound.h - self.group_padding_bottom - self.ls.h
         for group in self.team.groups.values():
             g = group_dict[group.code]
             group.x = g.x + start_x

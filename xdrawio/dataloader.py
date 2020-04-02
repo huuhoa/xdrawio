@@ -183,6 +183,10 @@ def read_data(file_path):
     # normalize data
     for mdl in mdls:
         mdl.wg_stype = "WGStyle%d" % (d.workgroups[mdl.wg_type]["type"])
+        # try:
+        #     mdl.wg_stype = "WGStyle%d" % (d.workgroups[mdl.wg_type]["type"])
+        # except KeyError as identifier:
+        #     print(identifier)
 
 
     return mdls, d
