@@ -107,6 +107,51 @@ def read_data(file_path):
 
     return d
 
+def convert_bank_status(status):
+    if status is None:
+        return "NA"
+    if "Completed" in status:
+        return "Completed"
+    if "In Progress" in status:
+        return "InProgress"
+    if "Pending" in status:
+        return "Pending"
+    return "Unknown"
+
+
+def build_groups(data):
+    item_padding = 70
+    item_height = 40
+
+    groups = {
+        b["info"]["Status"]: {
+                "name": b["info"]["Status"],
+                "status": convert_bank_status(b["info"]["Status"]),
+                "items": [],
+            } for b in data.banks.values()
+    }
+    for b in data.banks.values():
+        g = groups[b['info']["Status"]]
+        items = g["items"]
+        items.append(b)
+
+    start_y = 270
+    for g in groups.values():
+        gname = g["name"]
+        if gname is None:
+            gname = "Not Yet"
+
+        g["id"] = "group-%s" % g["name"]
+        g["h"] = len(g["items"]) * item_height + 50 + item_height / 2
+        g["w"] = 120 + len(data.column_stage) * item_padding + 40
+        g["y"] = start_y
+        g["display_name"] = gname
+        g["type"] = "group"
+        g["style"] = data.configurations["Group_%s" % g["status"]]
+
+        start_y += g["h"] + 10
+    return groups
+
 
 def flatten_data(data):
     all_items = []
@@ -118,6 +163,12 @@ def flatten_data(data):
 
     item_padding = 70
     item_height = 40
+    groups = build_groups(data)
+
+    total_height = 0
+    for g in groups.values():
+        total_height += g["h"] + 10
+
     x = start_x
     all_items.append({
         "type": "frame",
@@ -129,7 +180,7 @@ def flatten_data(data):
             "display_name": step["Display Name"],
             "x": start_x + 22.5 + counter * item_padding,
             "type": "step_label",
-            "h": len(data.banks) * item_height + 40,
+            "h": total_height + 40,
         })
         if step["Stage"] not in stages:
             stages[step["Stage"]] = {
@@ -149,52 +200,56 @@ def flatten_data(data):
     for ss in stages.values():
         all_items.append(ss)
 
-    for b in data.banks.values():
-        all_items.append({
-            "id": b["id"],
-            "y": start_y,
-            "type": "bank"
-        })
-        bank = {
-            "x": 0,
-            "w": 100,
-            "h": 20,
-            "type": "label",
-            "parentid": b["id"],
-            "w": 120 + len(data.column_stage) * item_padding + 40
-        }
-        bank.update(b)
-        all_items.append(bank)
-        counter = 0
-        info = b["info"]
-        all_items.append({
-            "type": "bank-line",
-            "parentid": b["id"],
-            "w": len(data.column_stage) * item_padding + 40
-        })
-        status = info["Status"]
-        for step in data.column_stage:
-            if status == "Completed":
-                value = ""
-            else:
-                value = info[step["Step"]]
-
-            if value is None:
-                style = data.configurations["StepStatus_NA"]
-                value = ""
-            else:
-                style = data.configurations["StepStatus_%s" % step["Stage"]]
-
+    for g in groups.values():
+        all_items.append(g)
+        inner_y = 50
+        for b in g["items"]:
             all_items.append({
-                "id": "%s-%d" % (b["id"], counter),
-                "display_name": value,
-                "x": 175 + counter * item_padding,
-                "type": "step",
-                "parentid": b["id"],
-                "style": style,
+                "id": b["id"],
+                "y": inner_y,
+                "type": "bank",
+                "parentid": g["id"],
             })
-            counter += 1
+            bank = {
+                "x": 0,
+                "w": 100,
+                "h": 20,
+                "type": "label",
+                "parentid": b["id"],
+                "w": 120 + len(data.column_stage) * item_padding + 40
+            }
+            bank.update(b)
+            all_items.append(bank)
+            counter = 0
+            info = b["info"]
+            all_items.append({
+                "type": "bank-line",
+                "parentid": b["id"],
+                "w": len(data.column_stage) * item_padding + 40
+            })
+            status = info["Status"]
+            for step in data.column_stage:
+                if status is not None and "Completed" in status:
+                    value = ""
+                else:
+                    value = info[step["Step"]]
 
-        start_y += item_height
+                if value is None:
+                    style = data.configurations["StepStatus_NA"]
+                    value = ""
+                else:
+                    style = data.configurations["StepStatus_%s" % step["Stage"]]
+
+                all_items.append({
+                    "id": "%s-%d" % (b["id"], counter),
+                    "display_name": value,
+                    "x": 175 + counter * item_padding,
+                    "type": "step",
+                    "parentid": b["id"],
+                    "style": style,
+                })
+                counter += 1
+
+            inner_y += item_height
 
     return all_items

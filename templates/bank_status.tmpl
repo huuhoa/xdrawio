@@ -1,5 +1,6 @@
 {% extends "main.tmpl" %}
 {% block background %}
+    <mxCell id="framelayer-background" value="BackgroundFrame" parent="0"/>
     <mxCell id="framelayer-parent" value="Frame" parent="0"/>
 
 # for item in items
@@ -25,6 +26,12 @@
     </mxCell>
 # endif
 
+# if item.type == "group"
+    <mxCell id="{{ item.id }}-background" value="{{ item.display_name }}" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=18;align=left;dashed=1;verticalAlign=top;fontStyle=1;spacingLeft=10;fontColor=#333333;{{ item.style }}" vertex="1" parent="framelayer-background">
+      <mxGeometry x="40" y="{{ item.y }}" width="{{ item.w }}" height="{{ item.h }}" as="geometry" />
+    </mxCell>
+# endif
+
 # endfor
 
 {% endblock background %}
@@ -33,9 +40,15 @@
     <mxCell id="2" value="Content" parent="0" />
 # for item in items
 
+# if item.type == "group"
+    <mxCell id="{{ item.id }}" style="group" vertex="1" parent="2">
+      <mxGeometry x="40" y="{{ item.y }}" width="{{ item.w }}" height="{{ item.h }}" as="geometry" />
+    </mxCell>
+# endif
+
 # if item.type == "bank"
-    <mxCell id="{{ item.id }}" value="" style="group" vertex="1" connectable="0" parent="2">
-      <mxGeometry x="40" y="{{ item.y }}" width="{{ item.w }}" height="30" as="geometry" />
+    <mxCell id="{{ item.id }}" value="" style="group" vertex="1" connectable="0" parent="{{ item.parentid }}">
+      <mxGeometry x="0" y="{{ item.y }}" width="{{ item.w }}" height="30" as="geometry" />
     </mxCell>
 # endif
 # if item.type == "bank-line"
