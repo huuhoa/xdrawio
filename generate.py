@@ -69,6 +69,24 @@ def load_bank_status(path):
     return template, all_items, data.configurations
 
 
+def load_roadmap(path):
+    import roadmap
+
+    env = Environment(
+        loader=FileSystemLoader('./templates'),
+        autoescape=select_autoescape(['html', 'xml']),
+        trim_blocks = True,
+        lstrip_blocks = True,
+        line_statement_prefix='#',
+    )
+
+    template = env.get_template('roadmap.tmpl')
+
+    data = roadmap.read_data(path)
+    all_items = roadmap.flatten_data(data)
+    return template, all_items, data.configurations
+
+
 def main():
     import argparse
 
@@ -124,6 +142,9 @@ def main():
 
     if args.type == 'bank_status':
         template, items, configs = load_bank_status(args.path)
+
+    if args.type == 'roadmap':
+        template, items, configs = load_roadmap(args.path)
 
     if not args.debug:
         print(template.render(
