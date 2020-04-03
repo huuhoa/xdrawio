@@ -107,16 +107,10 @@ def read_data(file_path):
 
     return d
 
-def convert_bank_status(status):
+def convert_bank_status(status, configs):
     if status is None:
         return "NA"
-    if "Completed" in status:
-        return "Completed"
-    if "In Progress" in status:
-        return "InProgress"
-    if "Pending" in status:
-        return "Pending"
-    return "Unknown"
+    return configs.get(status, "Unknown")
 
 
 def build_groups(data):
@@ -126,7 +120,7 @@ def build_groups(data):
     groups = {
         b["info"]["Status"]: {
                 "name": b["info"]["Status"],
-                "status": convert_bank_status(b["info"]["Status"]),
+                "status": convert_bank_status(b["info"]["Status"], data.configurations),
                 "items": [],
             } for b in data.banks.values()
     }
