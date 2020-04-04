@@ -1,6 +1,6 @@
-import xdrawio
 from .layoutparser import parseLayoutSpec 
 from .pagelayout import PageLayout
+import xutils
 
 
 def layout_workgroup(wgs):
@@ -26,7 +26,7 @@ def layout_workgroup(wgs):
             ti["h"] = height_lut[len(ti.get("members", []))]    # minimum height for empty
             ti["style"] = "WGStyle%d" % i
             ti["type"] = "wg"
-            ti["id"] = xdrawio.randomString()
+            ti["id"] = xutils.randomString()
             ti["display_name"] = "&lt;br/&gt;".join(ti.get("members", ""))
         
         # recaliberate team 0 height

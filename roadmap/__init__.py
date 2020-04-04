@@ -7,37 +7,10 @@ __copyright__ = '2020, NGUYEN Huu Hoa'
 __license__ = 'MIT'
 
 
-def read_column_data(wb):
-    ws = wb["Banks"]
-    for tbl in ws._tables:
-        if tbl.name == "Stages":
-            data = ws[tbl.ref]
-            break
-
-    td = []
-    header = None
-    for row in data:
-        # Get a list of all columns in each row
-        cols = []
-        for col in row:
-            cols.append(col.value)
-
-        if header is None:
-            header = cols
-            continue
-
-        td.append({header[i]:cols[i] for i in range(len(cols))})
-    
-    td.sort(key=lambda x: x["Sort Order"], reverse=False)
-    return td
-
-
 class Data(object):
     def __init__(self):
         super().__init__()
-        self.column_stage = {}
         self.roadmap = {}
-        self.styles = {}
         self.configurations = {}
 
 
@@ -81,15 +54,10 @@ def read_data(file_path):
     wb = openpyxl.load_workbook(file_path)
 
     d.configurations = xutils.read_configuration_data(wb)
-    d.column_stage = read_column_data(wb)
     d.roadmap = read_roadmap_data(wb)
 
     return d
 
-def convert_bank_status(status, configs):
-    if status is None:
-        return "NA"
-    return configs.get(status, "Unknown")
 
 def groupby_component(data):
     groups = {

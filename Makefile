@@ -24,3 +24,14 @@ status:
 	./generate.py -t bank_status -ps A5 "/Users/huuhoa/Documents/CorePayment/orgchart/BankBinding.xlsx" > bank_status.drawio
 	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o bank_status.pdf bank_status.drawio
 	open bank_status.pdf
+
+status-svg:
+	rm -f bank_status.svg
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f svg -o bank_status.svg bank_status.drawio
+
+.PHONY: roadmap
+roadmap:
+	rm -f roadmap.pdf
+	./generate.py -t roadmap -ps A5 "roadmap.xlsx" > roadmap.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o roadmap.pdf roadmap.drawio
+	open roadmap.pdf
