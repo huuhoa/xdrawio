@@ -28,7 +28,7 @@ def main():
 
 
     parser = argparse.ArgumentParser(
-        description='Render team structure to drawio file format.',
+        description='Render data to drawio file format.',
         epilog='Enjoy!'
         )
     parser.version = "1.0"
@@ -45,13 +45,15 @@ def main():
         '-ps',
         '--page-size',
         type=str,
-        help='page size, possible values: A0, A1, A2, A3, A4',
+        metavar="size",
+        help='page size, possible values: A0, A1, A2, A3, A4, A5, A6',
         default='A3'
     )
 
     parser.add_argument(
         '-po',
         '--page-orientation',
+        metavar="orientation",
         type=str,
         help='page orientation, possible values: portrait, landscape',
         default='portrait'
@@ -61,8 +63,8 @@ def main():
         '-t',
         '--type',
         type=str,
-        help='draw type, possible values: team, roadmap, bank_status',
-        default='team'
+        help='draw type, possible values: features, roadmap, status',
+        default='features'
     )
 
     args = parser.parse_args()

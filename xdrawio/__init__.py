@@ -41,10 +41,10 @@ def _load_roadmap(path):
 def render(t, data_path, page_info):
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-    if t == 'team':
+    if t == 'features':
         template_name, items, configs = _load_team(data_path)
 
-    if t == 'bank_status':
+    if t == 'status':
         template_name, items, configs = _load_bank_status(data_path)
 
     if t == 'roadmap':
