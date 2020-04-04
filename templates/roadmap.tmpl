@@ -15,11 +15,17 @@
     </mxCell>
 # endif
 
+# if item.type == "subdomain"
+    <mxCell id="{{ item.id }}" value="{{ item.display_name }}" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=1;verticalAlign=top;align=left;spacingLeft=10;fontSize=24;{{ item.style }}" vertex="1" parent="2">
+      <mxGeometry x="40" y="{{ item.y }}" width="1660" height="{{ item.h }}" as="geometry" />
+    </mxCell>
+# endif
+
 # endfor
 
 # for i in range(13)
     <mxCell id="r64LERCGtSKEjRHpzJJ6-19-{{i}}" value="" style="line;strokeWidth=1;direction=south;html=1;strokeColor=#B3B3B3;" vertex="1" parent="2">
-      <mxGeometry x="{{ i*120 + 160}}" y="160" width="1" height="{{ page['height'] - 320 }}" as="geometry" />
+      <mxGeometry x="{{ i*120 + 160}}" y="160" width="1" height="{{ page['height'] - 200 }}" as="geometry" />
     </mxCell>
 #endfor    
 

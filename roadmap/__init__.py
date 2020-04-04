@@ -37,8 +37,8 @@ def read_roadmap_data(wb):
         item = {}
         name = info["Feature Name"]
         item["id"] = xutils.randomString()
-        item["display_name"] = info["Feature Name"]
-        item["info"] = info
+        item['display_name'] = info["Feature Name"]
+        item['info'] = info
         d[name] = item
 
     return d
@@ -60,46 +60,95 @@ def read_data(file_path):
 
 
 def groupby_component(data):
-    groups = {
-        d["info"]["Component"]: {
-                "name": d["info"]["Component"].replace(" ", ""),
-                "display_name": d["info"]["Component"].upper(),
-                "type": "component",
-                "layers": {},
-                "items": [],
-            } for d in data.roadmap.values()
+    for d in data.roadmap.values():
+        d["style"] = data.configurations["Priority_%s" % d['info']['Priority']]
+
+    domains = {
+        d['info']["Domain"]: {
+            'name': d['info']["Domain"].replace(" ", ""),
+            'display_name': xutils.encode_name(d['info']["Domain"]),
+            'type': "domain",
+            "subdomains": {},
+            'items': [],
+        } for d in data.roadmap.values()
     }
     for d in data.roadmap.values():
-        g = groups[d['info']["Component"]]
-        items = g["items"]
-        d["style"] = data.configurations["Priority_%s" % d['info']['Priority']]
-        items.append(d)
+        domain = d['info']["Domain"]
+        domains[domain]['items'].append(d)
 
-    for g in groups.values():
-        items = g["items"]
-        layers = {
-            d['info']['Layer']: [] for d in items
+    for domain, dv in domains.items():
+        subdomains = { d['info']['Sub Domain']: {
+                'name': d['info']['Sub Domain'],
+                'display_name': xutils.encode_name(d['info']['Sub Domain']),
+                'type': 'subdomain',
+                'groups': {},
+                'items': [],
+            } for d in dv['items']
         }
-        for d in items:
-            l = layers[d['info']['Layer']]
-            l.append(d)
-        g["layers"] = layers
 
-    return groups
+        for d in dv['items']:
+            subdomains[d['info']['Sub Domain']]['items'].append(d)
+        dv['subdomains'] = subdomains
+
+        for sb in subdomains.values():
+            groups = {
+                d['info']['Component']: {
+                        'name': d['info']['Component'].replace(" ", ""),
+                        'display_name': xutils.encode_name(d['info']['Component'].upper()),
+                        'type': 'component',
+                        'layers': {},
+                        'items': [],
+                    } for d in sb['items']
+            }
+            for d in sb['items']:
+                groups[d['info']['Component']]['items'].append(d)
+            for g in groups.values():
+                items = g['items']
+                layers = {
+                    d['info']['Layer']: [] for d in items
+                }
+                for d in items:
+                    l = layers[d['info']['Layer']]
+                    l.append(d)
+                g['layers'] = layers
+
+            sb['groups'] = groups
+
+    # for dv in domains.values():
+    #     for sdv in dv['subdomains'].values():
+    #         # compute
+    return domains
+
+
+def layout_subdomain(subdomains, start_y, item_height, data):
+    header_height = 60
+    padding_bottom = 20
+    for sdv in sorted(subdomains.values(), key=lambda x: x['name']):
+        sdv_name = sdv['name']
+        sdv['id'] = xutils.randomString()
+        sdv['style'] = data.configurations.get('Subdomain_%s' % sdv_name)
+        sdv['y'] = start_y
+        group_height = layout_group(sdv['groups'], start_y + header_height, item_height, data)
+        sdv['h'] = header_height + group_height + padding_bottom
+        start_y += sdv['h'] + padding_bottom
 
 
 def layout_group(groups, start_y, item_height, data):
-    for g in groups.values():
-        gname = g["name"]
-        if gname is None:
-            gname = "Not Yet"
+    group_height = 0
+    group_padding = 10
+    for g in sorted(groups.values(), key=lambda x: x['name']):
+        gname = g['name']
 
-        g["id"] = "group-%s" % g["name"]
-        g["h"] = len(g["layers"]) * item_height + item_height - 10
+        g["id"] = "group-%s" % g['name']
+        g["h"] = len(g['layers']) * item_height + item_height - 10
         g["y"] = start_y
         g["style"] = data.configurations["Component_%s" % gname]
 
-        start_y += g["h"] + 10
+        start_y += g["h"] + group_padding
+        group_height += g['h']
+
+    group_height += (len(groups) - 1) * group_padding
+    return group_height
 
 
 def compute_width_by_date(start_date):
@@ -154,8 +203,8 @@ def flatten_roadmapitems(all_items, items, parentid, start_y):
             "y": start_y,
             "start": start + 80,
             "end": end + 80,
-            "type": "item",
-            "display_name": b["info"]["Feature Name"],
+            'type': "item",
+            'display_name': b['info']["Feature Name"],
             "style": b['style'],
             "parentid": parentid,
         })
@@ -171,22 +220,20 @@ def flatten_data(data):
 
     item_padding = 70
     item_height = 50
-    groups = groupby_component(data)
-    layout_group(groups, start_y, item_height, data)
+    domains = groupby_component(data)
+    for dv in domains.values():
+        subdomains = dv['subdomains']
+        layout_subdomain(subdomains, start_y, item_height, data)
+        for sdv in subdomains.values():
+            all_items.append(sdv)
 
-    total_height = 0
-    for g in groups.values():
-        total_height += g["h"] + 10
-
-    x = start_x
-
-    for g in groups.values():
-        all_items.append(g)
-        inner_y = 50
-        parentid = g["id"]
-        for l in sorted(g["layers"].keys()):
-            layer = g["layers"][l]
-            flatten_roadmapitems(all_items, layer, parentid, inner_y)
-            inner_y += item_height
+            for g in sdv['groups'].values():
+                all_items.append(g)
+                inner_y = 50
+                parentid = g["id"]
+                for l in sorted(g['layers'].keys()):
+                    layer = g['layers'][l]
+                    flatten_roadmapitems(all_items, layer, parentid, inner_y)
+                    inner_y += item_height
 
     return all_items
