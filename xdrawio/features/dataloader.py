@@ -1,4 +1,4 @@
-import xutils
+import xdrawio.xutils
 
 def read_team_data(data):
     td = {}
@@ -15,7 +15,7 @@ def read_team_data(data):
 
         td[cols[0]] = {
             "layer": cols[2],
-            "display_name": xutils.encode_name(cols[1]),
+            "display_name": xdrawio.xutils.encode_name(cols[1]),
             "style": cols[3],
         }
     
@@ -46,7 +46,7 @@ def read_group_data(data):
             continue
 
         d[cols[0]] = {
-            "display_name": xutils.encode_name(cols[1]),
+            "display_name": xdrawio.xutils.encode_name(cols[1]),
         }
 
     return d
@@ -95,7 +95,7 @@ def read_workgroup_data(data):
 
 
 def read_module_data(wb):
-    from xdrawio.datatypes import Module
+    from xdrawio.features.datatypes import Module
 
     ws = wb["Modules"]
     for tbl in ws._tables:
@@ -133,7 +133,7 @@ def read_data(file_path):
     # To open Workbook 
     wb = openpyxl.load_workbook(file_path)
 
-    d.configurations = xutils.read_configuration_data(wb)
+    d.configurations = xdrawio.xutils.read_configuration_data(wb)
 
     ws = wb["Teams"]
     

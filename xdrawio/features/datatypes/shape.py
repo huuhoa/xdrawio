@@ -1,9 +1,9 @@
-import xutils
+import xdrawio.xutils
 
 class Shape(object):
     type = "unknnown"
     def __init__(self):
-        self.id = xutils.randomString()
+        self.id = xdrawio.xutils.randomString()
         self.x = 0
         self.y = 0
         self.w = 0

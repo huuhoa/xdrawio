@@ -1,4 +1,4 @@
-from xdrawio.datatypes import Shape
+from xdrawio.features.datatypes import Shape
 
 class Page(Shape):
     r"""Page contains:
@@ -26,7 +26,7 @@ class Page(Shape):
             Each group will contains list of modules
         - Page.layers will contains all teams' layers
         """
-        from xdrawio.datatypes import Team, Group
+        from xdrawio.features.datatypes import Team, Group
 
         for item in mdls:
             team_code = item.team

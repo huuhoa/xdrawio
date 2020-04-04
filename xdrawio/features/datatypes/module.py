@@ -1,5 +1,5 @@
-from xdrawio.datatypes import Shape
-import xutils
+from xdrawio.features.datatypes import Shape
+import xdrawio.xutils
 
 class Module(Shape):
     item_height = 50
@@ -9,7 +9,7 @@ class Module(Shape):
 
     def __init__(self, display_name, status, progress):
         super().__init__()
-        self.display_name = xutils.encode_name(display_name)
+        self.display_name = xdrawio.xutils.encode_name(display_name)
         self.team = ""
         self.group = ""
         self.wg_type = ""

@@ -1,4 +1,4 @@
-from xdrawio.datatypes import Shape
+from xdrawio.features.datatypes import Shape
 
 class Team(Shape):
     type = "team"

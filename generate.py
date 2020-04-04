@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-
 import xdrawio
 
 def get_page_dimention(page_size, page_orientation):
@@ -23,68 +21,6 @@ def get_page_dimention(page_size, page_orientation):
     else:
         return 0, 0
 
-
-def load_team(path):
-    from xdrawio.layout import create_layout, layout_workgroup
-    from xdrawio.datatypes import Page
-
-    env = Environment(
-        loader=FileSystemLoader('./templates'),
-        autoescape=select_autoescape(['html', 'xml']),
-        trim_blocks = True,
-        lstrip_blocks = True,
-        line_statement_prefix='#',
-    )
-
-    template = env.get_template('corepayment.tmpl')
-
-    mdls, d = xdrawio.read_data(path)
-
-    wgs_byteam = layout_workgroup(d.workgroups)
-
-    page = Page()
-    page.initialize(mdls, d, wgs_byteam)
-
-    create_layout(page, wgs_byteam, d)
-    # flat out
-    all_items = page.flatten_tree()
-
-    return template, all_items, d.configurations
-
-def load_bank_status(path):
-    import bstatus
-
-    env = Environment(
-        loader=FileSystemLoader('./templates'),
-        autoescape=select_autoescape(['html', 'xml']),
-        trim_blocks = True,
-        lstrip_blocks = True,
-        line_statement_prefix='#',
-    )
-
-    template = env.get_template('bank_status.tmpl')
-
-    data = bstatus.read_data(path)
-    all_items = bstatus.flatten_data(data)
-    return template, all_items, data.configurations
-
-
-def load_roadmap(path):
-    import roadmap
-
-    env = Environment(
-        loader=FileSystemLoader('./templates'),
-        autoescape=select_autoescape(['html', 'xml']),
-        trim_blocks = True,
-        lstrip_blocks = True,
-        line_statement_prefix='#',
-    )
-
-    template = env.get_template('roadmap.tmpl')
-
-    data = roadmap.read_data(path)
-    all_items = roadmap.flatten_data(data)
-    return template, all_items, data.configurations
 
 
 def main():
@@ -137,20 +73,8 @@ def main():
         "height": h
     }
 
-    if args.type == 'team':
-        template, items, configs = load_team(args.path)
-
-    if args.type == 'bank_status':
-        template, items, configs = load_bank_status(args.path)
-
-    if args.type == 'roadmap':
-        template, items, configs = load_roadmap(args.path)
-
     if not args.debug:
-        print(template.render(
-                items=items,
-                configs=configs,
-                page=page))
+        xdrawio.render(args.type, args.path, page)
 
 
 if __name__ == "__main__":

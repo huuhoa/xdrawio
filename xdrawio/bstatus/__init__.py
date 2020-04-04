@@ -1,4 +1,4 @@
-import xutils
+import xdrawio.xutils
 
 __version_info__ = (0,1,0)
 __version__ = '.'.join([str(__value) for __value in __version_info__])
@@ -61,7 +61,7 @@ def read_banks_data(wb):
         bank_name = cols[0]
         info = {header[i]:cols[i] for i in range(1, len(cols))}
         bank = {}
-        bank["id"] = xutils.randomString()
+        bank["id"] = xdrawio.xutils.randomString()
         bank["display_name"] = bank_name
         bank["info"] = info
         d[bank_name] = bank
@@ -78,7 +78,7 @@ def read_data(file_path):
     # To open Workbook 
     wb = openpyxl.load_workbook(file_path)
 
-    d.configurations = xutils.read_configuration_data(wb)
+    d.configurations = xdrawio.xutils.read_configuration_data(wb)
     d.column_stage = read_column_data(wb)
     d.banks = read_banks_data(wb)
 
