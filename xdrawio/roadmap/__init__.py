@@ -21,7 +21,7 @@ def read_roadmap_data(wb):
             data = ws[tbl.ref]
             break
 
-    d = {}
+    d = []
     header = None
     for row in data:
         # Get a list of all columns in each row
@@ -37,8 +37,7 @@ def read_roadmap_data(wb):
         name = item["Feature Name"]
         item["id"] = xdrawio.xutils.randomString()
         item['display_name'] = name
-        d[name] = item
-
+        d.append(item)
     return d
 
 
@@ -57,8 +56,13 @@ def read_data(file_path):
     return d
 
 
+def get_subdomain_display_name(name, domain, configurations):
+    key = 'R_Title_Subdomain_%s_%s' % (domain, xdrawio.xutils.encode_identity(name))
+    return xdrawio.xutils.encode_name(configurations.get(key, name))
+
+
 def groupby_component(data):
-    for d in data.roadmap.values():
+    for d in data.roadmap:
         d["style"] = data.configurations["Priority_%s" % d['Priority']]
 
     domains = {
@@ -68,16 +72,18 @@ def groupby_component(data):
             'type': 'domain',
             "subdomains": {},
             'items': [],
-        } for d in data.roadmap.values()
+        } for d in data.roadmap
     }
-    for d in data.roadmap.values():
+    for d in data.roadmap:
         domain = d['Domain']
         domains[domain]['items'].append(d)
 
     for domain, dv in domains.items():
         subdomains = { d['Sub Domain']: {
-                'name': d['Sub Domain'],
-                'display_name': xdrawio.xutils.encode_name(d['Sub Domain']),
+                'name': xdrawio.xutils.encode_identity(d['Sub Domain']),
+                'sort': d['Sub Domain'],
+                'display_name': get_subdomain_display_name(d['Sub Domain'], dv['name'], data.configurations),
+                'domain': dv['name'],
                 'type': 'subdomain',
                 'groups': {},
                 'items': [],
@@ -121,10 +127,10 @@ def groupby_component(data):
 def layout_subdomain(subdomains, start_y, item_height, data):
     header_height = 60
     padding_bottom = 20
-    for sdv in sorted(subdomains.values(), key=lambda x: x['name']):
+    for sdv in sorted(subdomains.values(), key=lambda x: x['sort']):
         sdv_name = sdv['name']
         sdv['id'] = xdrawio.xutils.randomString()
-        sdv['style'] = data.configurations.get('Subdomain_%s' % sdv_name)
+        sdv['style'] = data.configurations.get('R_Style_Subdomain_%s_%s' % (sdv['domain'], sdv_name))
         sdv['y'] = start_y
         group_height = layout_group(sdv['groups'], start_y + header_height, item_height, data)
         sdv['h'] = header_height + group_height + padding_bottom
@@ -140,7 +146,7 @@ def layout_group(groups, start_y, item_height, data):
         g["id"] = xdrawio.xutils.randomString()
         g["h"] = len(g['layers']) * item_height + item_height - 10
         g["y"] = start_y
-        g["style"] = data.configurations["Component_%s" % gname]
+        g["style"] = data.configurations.get('Component_%s' % gname, '')
 
         start_y += g["h"] + group_padding
         group_height += g['h']

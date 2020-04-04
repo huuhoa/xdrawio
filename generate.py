@@ -72,11 +72,11 @@ def main():
     w, h = get_page_dimention(args.page_size, args.page_orientation)
     page = {
         "width": w,
-        "height": h
+        "height": h,
+        'debug': args.debug,
     }
 
-    if not args.debug:
-        xdrawio.render(args.type, args.path, page)
+    xdrawio.render(args.type, args.path, page)
 
 
 if __name__ == "__main__":

@@ -53,6 +53,8 @@ def render(t, data_path, page_info):
     if t == 'roadmap':
         template_name, items, configs = _load_roadmap(data_path, init_config)
 
+    if configs['debug']:
+        return
 
     env = Environment(
         loader=FileSystemLoader('./templates'),
