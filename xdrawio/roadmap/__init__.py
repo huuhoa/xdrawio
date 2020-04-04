@@ -33,12 +33,10 @@ def read_roadmap_data(wb):
             header = cols
             continue
 
-        info = {header[i]:cols[i] for i in range(len(cols))}
-        item = {}
-        name = info["Feature Name"]
+        item = {header[i]:cols[i] for i in range(len(cols))}
+        name = item["Feature Name"]
         item["id"] = xdrawio.xutils.randomString()
-        item['display_name'] = info["Feature Name"]
-        item['info'] = info
+        item['display_name'] = name
         d[name] = item
 
     return d
@@ -61,25 +59,25 @@ def read_data(file_path):
 
 def groupby_component(data):
     for d in data.roadmap.values():
-        d["style"] = data.configurations["Priority_%s" % d['info']['Priority']]
+        d["style"] = data.configurations["Priority_%s" % d['Priority']]
 
     domains = {
-        d['info']["Domain"]: {
-            'name': d['info']["Domain"].replace(" ", ""),
-            'display_name': xdrawio.xutils.encode_name(d['info']["Domain"]),
-            'type': "domain",
+        d['Domain']: {
+            'name': xdrawio.xutils.encode_identity(d['Domain']),
+            'display_name': xdrawio.xutils.encode_name(d['Domain']),
+            'type': 'domain',
             "subdomains": {},
             'items': [],
         } for d in data.roadmap.values()
     }
     for d in data.roadmap.values():
-        domain = d['info']["Domain"]
+        domain = d['Domain']
         domains[domain]['items'].append(d)
 
     for domain, dv in domains.items():
-        subdomains = { d['info']['Sub Domain']: {
-                'name': d['info']['Sub Domain'],
-                'display_name': xdrawio.xutils.encode_name(d['info']['Sub Domain']),
+        subdomains = { d['Sub Domain']: {
+                'name': d['Sub Domain'],
+                'display_name': xdrawio.xutils.encode_name(d['Sub Domain']),
                 'type': 'subdomain',
                 'groups': {},
                 'items': [],
@@ -87,28 +85,28 @@ def groupby_component(data):
         }
 
         for d in dv['items']:
-            subdomains[d['info']['Sub Domain']]['items'].append(d)
+            subdomains[d['Sub Domain']]['items'].append(d)
         dv['subdomains'] = subdomains
 
         for sb in subdomains.values():
             groups = {
-                d['info']['Component']: {
-                        'name': d['info']['Component'].replace(" ", ""),
-                        'display_name': xdrawio.xutils.encode_name(d['info']['Component'].upper()),
+                d['Component']: {
+                        'name': xdrawio.xutils.encode_identity(d['Component']),
+                        'display_name': xdrawio.xutils.encode_name(d['Component'].upper()),
                         'type': 'component',
                         'layers': {},
                         'items': [],
                     } for d in sb['items']
             }
             for d in sb['items']:
-                groups[d['info']['Component']]['items'].append(d)
+                groups[d['Component']]['items'].append(d)
             for g in groups.values():
                 items = g['items']
                 layers = {
-                    d['info']['Layer']: [] for d in items
+                    d['Layer']: [] for d in items
                 }
                 for d in items:
-                    l = layers[d['info']['Layer']]
+                    l = layers[d['Layer']]
                     l.append(d)
                 g['layers'] = layers
 
@@ -139,7 +137,7 @@ def layout_group(groups, start_y, item_height, data):
     for g in sorted(groups.values(), key=lambda x: x['name']):
         gname = g['name']
 
-        g["id"] = "group-%s" % g['name']
+        g["id"] = xdrawio.xutils.randomString()
         g["h"] = len(g['layers']) * item_height + item_height - 10
         g["y"] = start_y
         g["style"] = data.configurations["Component_%s" % gname]
@@ -183,20 +181,20 @@ def date_is_nearby(d1, d2):
 
 
 def flatten_roadmapitems(all_items, items, parentid, start_y):
-    items.sort(key=lambda x: x['info']['End Date'], reverse=True)
+    items.sort(key=lambda x: x['End Date'], reverse=True)
     prev_item = {
         'Start Date': datetime.datetime(2000, 1, 1)
     }
     for b in items:
-        start_date = b['info']['Start Date']
-        end_date = b['info']['End Date']
+        start_date = b['Start Date']
+        end_date = b['End Date']
         start = compute_width_by_date(start_date)
         end = compute_width_by_date(end_date)
         if date_is_nearby(end_date, prev_item['Start Date']):
             last_item = all_items[-1]
             last_item['start'] = last_item['start'] + 7
 
-        prev_item = b['info']
+        prev_item = b
 
         all_items.append({
             "id": b["id"],
@@ -204,7 +202,7 @@ def flatten_roadmapitems(all_items, items, parentid, start_y):
             "start": start + 80,
             "end": end + 80,
             'type': "item",
-            'display_name': b['info']["Feature Name"],
+            'display_name': b["Feature Name"],
             "style": b['style'],
             "parentid": parentid,
         })
@@ -221,7 +219,15 @@ def flatten_data(data):
     item_padding = 70
     item_height = 50
     domains = groupby_component(data)
-    for dv in domains.values():
+    page_index = 0
+    for dv in sorted(domains.values(), key=lambda x: x['display_name']):
+        all_items.append({
+            'id': xdrawio.xutils.randomString(),
+            'display_name': data.configurations['R_Title_Domain_%s' % dv['name']],
+            'sub_title': 'Last updated: %s' % (datetime.datetime.now().strftime('%d-%m-%Y')),
+            'type': 'domain',
+            'page': page_index,
+        })
         subdomains = dv['subdomains']
         layout_subdomain(subdomains, start_y, item_height, data)
         for sdv in subdomains.values():
@@ -236,4 +242,8 @@ def flatten_data(data):
                     flatten_roadmapitems(all_items, layer, parentid, inner_y)
                     inner_y += item_height
 
+        start_y += data.configurations['height']
+        page_index += 1
+
+    data.configurations['page_count'] = page_index
     return all_items

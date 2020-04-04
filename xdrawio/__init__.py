@@ -30,10 +30,11 @@ def _load_bank_status(path):
     return 'bank_status.tmpl', all_items, data.configurations
 
 
-def _load_roadmap(path):
+def _load_roadmap(path, init_config):
     import xdrawio.roadmap
 
     data = xdrawio.roadmap.read_data(path)
+    data.configurations.update(init_config)
     all_items = xdrawio.roadmap.flatten_data(data)
     return 'roadmap.tmpl', all_items, data.configurations
 
@@ -41,6 +42,8 @@ def _load_roadmap(path):
 def render(t, data_path, page_info):
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+    init_config = {}
+    init_config.update(page_info)
     if t == 'features':
         template_name, items, configs = _load_team(data_path)
 
@@ -48,7 +51,7 @@ def render(t, data_path, page_info):
         template_name, items, configs = _load_bank_status(data_path)
 
     if t == 'roadmap':
-        template_name, items, configs = _load_roadmap(data_path)
+        template_name, items, configs = _load_roadmap(data_path, init_config)
 
 
     env = Environment(

@@ -31,7 +31,15 @@ status-svg:
 
 .PHONY: roadmap
 roadmap:
-	rm -f roadmap.pdf
-	./generate.py -t roadmap -ps A5 "roadmap.xlsx" > roadmap.drawio
-	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o roadmap.pdf roadmap.drawio
-	open roadmap.pdf
+	rm -f cp_roadmap.pdf
+	./generate.py -t roadmap -ps A5 CorePayment.xlsx > cp_roadmap.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_roadmap.pdf cp_roadmap.drawio
+	open cp_roadmap.pdf
+
+cp:
+	./generate.py CorePayment.xlsx -po landscape > cp_features.drawio
+	./generate.py -t status -ps A5 CorePayment.xlsx > cp_bank_status.drawio
+	./generate.py -t roadmap -ps A5 CorePayment.xlsx > cp_roadmap.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_roadmap.pdf cp_roadmap.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_bank_status.pdf cp_bank_status.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_features.pdf cp_features.drawio

@@ -1,10 +1,28 @@
 {% extends "main.tmpl" %}
 {% block background %}
     <mxCell id="2" value="Background" style="" parent="0" />
-    {% include "roadmap_legend.tmpl" %}
-    {% include "roadmap_cal.tmpl" %}
+
+{% from "roadmap_cal.tmpl" import build_cal with context %}
+{% from "roadmap_legend.tmpl" import build_legend with context %}
+
+# for pi in range(configs['page_count'])
+{{ build_cal(pi, configs['height']) }}
+{{ build_legend(pi, configs['height']) }}
+# endfor
 
 # for item in items
+
+# if item.type == "domain"
+    <mxCell id="{{ item.id }}" value="" style="group" vertex="1" connectable="0" parent="2">
+      <mxGeometry x="280" y="{{ 20 + item.page * page.height }}" width="900" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="{{ item.id }}-1" value="{{ item.display_name }}" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=27;fontColor=#1A1A1A;" vertex="1" parent="{{ item.id }}">
+      <mxGeometry width="900" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="{{ item.id }}-2" value="{{ item.sub_title }}" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#4D4D4D;" vertex="1" parent="{{ item.id }}">
+      <mxGeometry y="30" width="900" height="20" as="geometry" />
+    </mxCell>
+# endif
 
 # if item.type == "component"
     <mxCell id="{{ item.id }}-1" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=13;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="2" vertex="1">
@@ -23,12 +41,13 @@
 
 # endfor
 
-# for i in range(13)
-    <mxCell id="r64LERCGtSKEjRHpzJJ6-19-{{i}}" value="" style="line;strokeWidth=1;direction=south;html=1;strokeColor=#B3B3B3;" vertex="1" parent="2">
-      <mxGeometry x="{{ i*120 + 160}}" y="160" width="1" height="{{ page['height'] - 200 }}" as="geometry" />
-    </mxCell>
-#endfor    
-
+# for pi in range(configs['page_count'])
+  # for i in range(13)
+      <mxCell id="vertical-line-month-{{pi}}-{{i}}" value="" style="line;strokeWidth=1;direction=south;html=1;strokeColor=#B3B3B3;" vertex="1" parent="2">
+        <mxGeometry x="{{ i*120 + 160}}" y="{{ 160 + pi * page['height'] }}" width="1" height="{{ page['height'] - 200 }}" as="geometry" />
+      </mxCell>
+  #endfor
+# endfor
 {% endblock background %}
 
 {% block content %}

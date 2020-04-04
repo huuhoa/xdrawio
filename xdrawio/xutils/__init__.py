@@ -38,6 +38,12 @@ def encode_name(name):
     return name.replace("&", "&amp;")
 
 
+def encode_identity(name):
+    import re
+    pattern = re.compile('[^a-zA-Z]+')
+    return re.sub(pattern, '', name)
+
+
 def randomString(stringLength=10):
     import random
     import string
