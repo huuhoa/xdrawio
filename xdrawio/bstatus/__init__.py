@@ -125,6 +125,25 @@ def build_groups(data):
 
 
 def flatten_data(data):
+
+    def _determine_status_style(status, value, stage):
+        if status is not None and "Completed" in status:
+            value = ""
+            style = data.configurations["StepStatus_%s" % stage]
+            return value, style
+
+        if value is None:
+            style = data.configurations["StepStatus_NA"]
+            value = ""
+            return value, style
+        if 'D' not in value and 'W' not in value:
+            style = data.configurations["StepStatus_Planning"]
+            return value, style
+
+        style = data.configurations["StepStatus_%s" % stage]
+        return value, style
+
+
     all_items = []
 
     start_x = 0
@@ -200,16 +219,7 @@ def flatten_data(data):
             })
             status = info["Status"]
             for step in data.column_stage:
-                if status is not None and "Completed" in status:
-                    value = ""
-                else:
-                    value = info[step["Step"]]
-
-                if value is None:
-                    style = data.configurations["StepStatus_NA"]
-                    value = ""
-                else:
-                    style = data.configurations["StepStatus_%s" % step["Stage"]]
+                value, style = _determine_status_style(status, info[step["Step"]], step["Stage"])
 
                 all_items.append({
                     "id": "%s-%d" % (b["id"], counter),

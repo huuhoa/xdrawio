@@ -20,10 +20,10 @@ bb:
 	open bank_binding.pdf
 
 status:
-	rm -f bank_status.pdf
-	./generate.py -t status -ps A5 "/Users/huuhoa/Documents/CorePayment/orgchart/BankBinding.xlsx" > bank_status.drawio
-	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o bank_status.pdf bank_status.drawio
-	open bank_status.pdf
+	rm -f cp_bank_status.pdf
+	./generate.py -t status -ps A5 CorePayment.xlsx > cp_bank_status.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_bank_status.pdf cp_bank_status.drawio
+	open cp_bank_status.pdf
 
 status-svg:
 	rm -f bank_status.svg
