@@ -190,7 +190,7 @@ class Edge(Enum):
     Bottom = YGEdgeBottom
     Start = YGEdgeStart
     End = YGEdgeEnd
-    Horizontl = YGEdgeHorizontal
+    Horizontal = YGEdgeHorizontal
     Vertical = YGEdgeVertical
     All = YGEdgeAll
 
