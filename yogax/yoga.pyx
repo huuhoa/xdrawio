@@ -1,3 +1,6 @@
+# distutils: language = c++
+# cython: language_level=3
+
 from libc.stdint cimport uint32_t
 from enum import Enum
 
@@ -31,6 +34,7 @@ cdef extern from "yoga/yoga/Yoga.h":
         YGJustifyFlexEnd
         YGJustifySpaceBetween
         YGJustifySpaceAround
+        YGJustifySpaceEvenly
 
     ctypedef enum YGAlign:
         YGAlignAuto
@@ -38,6 +42,9 @@ cdef extern from "yoga/yoga/Yoga.h":
         YGAlignCenter
         YGAlignFlexEnd
         YGAlignStretch
+        YGAlignBaseline
+        YGAlignSpaceBetween
+        YGAlignSpaceAround
 
     ctypedef enum YGPositionType:
         YGPositionTypeRelative
@@ -46,6 +53,7 @@ cdef extern from "yoga/yoga/Yoga.h":
     ctypedef enum YGWrap:
         YGWrapNoWrap
         YGWrapWrap
+        YGWrapWrapReverse
 
     ctypedef enum YGOverflow:
         YGOverflowVisible
@@ -84,25 +92,25 @@ cdef extern from "yoga/yoga/Yoga.h":
 
     # TODO void YGNodeStyleSetDirection(YGNodeRef node, YGDirection direction)
     # TODO YGDirection YGNodeStyleGetDirection(YGNodeRef node)
-    # TODO void YGNodeStyleSetFlexDirection(YGNodeRef node, YGFlexDirection flexDirection)
-    # TODO YGFlexDirection YGNodeStyleGetFlexDirection(YGNodeRef node)
-    # TODO void YGNodeStyleSetJustifyContent(YGNodeRef node, YGJustify justifyContent)
-    # TODO YGJustify YGNodeStyleGetJustifyContent(YGNodeRef node)
-    # TODO void YGNodeStyleSetAlignContent(YGNodeRef node, YGAlign alignContent)
-    # TODO YGAlign YGNodeStyleGetAlignContent(YGNodeRef node)
-    # TODO void YGNodeStyleSetAlignItems(YGNodeRef node, YGAlign alignItems)
-    # TODO YGAlign YGNodeStyleGetAlignItems(YGNodeRef node)
-    # TODO void YGNodeStyleSetAlignSelf(YGNodeRef node, YGAlign alignSelf)
-    # TODO YGAlign YGNodeStyleGetAlignSelf(YGNodeRef node)
-    # TODO void YGNodeStyleSetPositionType(YGNodeRef node, YGPositionType positionType)
-    # TODO YGPositionType YGNodeStyleGetPositionType(YGNodeRef node)
-    # TODO void YGNodeStyleSetFlexWrap(YGNodeRef node, YGWrap flexWrap)
-    # TODO YGWrap YGNodeStyleGetFlexWrap(YGNodeRef node)
-    # TODO void YGNodeStyleSetOverflow(YGNodeRef node, YGOverflow overflow)
-    # TODO YGOverflow YGNodeStyleGetOverflow(YGNodeRef node)
-    # TODO void YGNodeStyleSetFlex(YGNodeRef node, float flex)
-    # TODO void YGNodeStyleSetFlexGrow(YGNodeRef node, float flexGrow)
-    # TODO float YGNodeStyleGetFlexGrow(YGNodeRef node)
+    void YGNodeStyleSetFlexDirection(YGNodeRef node, YGFlexDirection flexDirection)
+    YGFlexDirection YGNodeStyleGetFlexDirection(YGNodeRef node)
+    void YGNodeStyleSetJustifyContent(YGNodeRef node, YGJustify justifyContent)
+    YGJustify YGNodeStyleGetJustifyContent(YGNodeRef node)
+    void YGNodeStyleSetAlignContent(YGNodeRef node, YGAlign alignContent)
+    YGAlign YGNodeStyleGetAlignContent(YGNodeRef node)
+    void YGNodeStyleSetAlignItems(YGNodeRef node, YGAlign alignItems)
+    YGAlign YGNodeStyleGetAlignItems(YGNodeRef node)
+    void YGNodeStyleSetAlignSelf(YGNodeRef node, YGAlign alignSelf)
+    YGAlign YGNodeStyleGetAlignSelf(YGNodeRef node)
+    void YGNodeStyleSetPositionType(YGNodeRef node, YGPositionType positionType)
+    YGPositionType YGNodeStyleGetPositionType(YGNodeRef node)
+    void YGNodeStyleSetFlexWrap(YGNodeRef node, YGWrap flexWrap)
+    YGWrap YGNodeStyleGetFlexWrap(YGNodeRef node)
+    void YGNodeStyleSetOverflow(YGNodeRef node, YGOverflow overflow)
+    YGOverflow YGNodeStyleGetOverflow(YGNodeRef node)
+    void YGNodeStyleSetFlex(YGNodeRef node, float flex)
+    void YGNodeStyleSetFlexGrow(YGNodeRef node, float flexGrow)
+    float YGNodeStyleGetFlexGrow(YGNodeRef node)
     # TODO void YGNodeStyleSetFlexShrink(YGNodeRef node, float flexShrink)
     # TODO float YGNodeStyleGetFlexShrink(YGNodeRef node)
     # TODO void YGNodeStyleSetFlexBasis(YGNodeRef node, float flexBasis)
@@ -161,6 +169,7 @@ class Justify(Enum):
     FlexEnd = YGJustifyFlexEnd
     SpaceBetween = YGJustifySpaceBetween
     SpaceAround = YGJustifySpaceAround
+    SpaceEvenly = YGJustifySpaceEvenly
 
 
 class Align(Enum):
@@ -169,6 +178,9 @@ class Align(Enum):
     Center = YGAlignCenter
     FlexEnd = YGAlignFlexEnd
     Stretch = YGAlignStretch
+    Baseline = YGAlignBaseline
+    SpaceBetween = YGAlignSpaceBetween
+    SpaceAround = YGAlignSpaceAround
 
 
 class Edge(Enum):
@@ -191,6 +203,7 @@ class PositionType(Enum):
 class Wrap(Enum):
     NoWrap = YGWrapNoWrap
     Wrap = YGWrapWrap
+    WrapReverse = YGWrapWrapReverse
 
 
 class Overflow(Enum):
@@ -242,6 +255,80 @@ cdef class Node:
         return YGNodeGetChildCount(self._ref)
 
     # Style setters & getters
+    @property
+    def flex_direction(self):
+        return YGNodeStyleGetFlexDirection(self._ref)
+
+    @flex_direction.setter
+    def flex_direction(self, direction):
+        YGNodeStyleSetFlexDirection(self._ref, direction.value)
+
+    def set_flex(self, value):
+        YGNodeStyleSetFlex(self._ref, value)
+
+    @property
+    def flex_grow(self):
+        return YGNodeStyleGetFlexGrow(self._ref)
+    
+    @flex_grow.setter
+    def flex_grow(self, value):
+        YGNodeStyleSetFlexGrow(self._ref, value)
+
+    @property
+    def justify_content(self):
+        return YGNodeStyleGetJustifyContent(self._ref)
+
+    @justify_content.setter
+    def justify_content(self, align):
+        YGNodeStyleSetJustifyContent(self._ref, align.value)
+
+    @property
+    def align_content(self):
+        return YGNodeStyleGetAlignContent(self._ref)
+
+    @align_content.setter
+    def align_content(self, align):
+        YGNodeStyleSetAlignContent(self._ref, align.value)
+
+    @property
+    def align_items(self):
+        return YGNodeStyleGetAlignItems(self._ref)
+
+    @align_items.setter
+    def align_items(self, align):
+        YGNodeStyleSetAlignItems(self._ref, align.value)
+
+    @property
+    def align_self(self):
+        return YGNodeStyleGetAlignSelf(self._ref)
+
+    @align_self.setter
+    def align_self(self, align):
+        YGNodeStyleSetAlignSelf(self._ref, align.value)
+
+    @property
+    def position_type(self):
+        return YGNodeStyleGetPositionType(self._ref)
+
+    @position_type.setter
+    def position_type(self, positionType):
+        YGNodeStyleSetPositionType(self._ref, positionType.value)
+
+    @property
+    def flex_wrap(self):
+        return YGNodeStyleGetFlexWrap(self._ref)
+
+    @flex_wrap.setter
+    def flex_wrap(self, flexWrap):
+        YGNodeStyleSetFlexWrap(self._ref, flexWrap.value)
+
+    @property
+    def overflow(self):
+        return YGNodeStyleGetOverflow(self._ref)
+
+    @overflow.setter
+    def overflow(self, overflow):
+        YGNodeStyleSetOverflow(self._ref, overflow.value)
 
     def set_padding(self, edge, value):
         YGNodeStyleSetPadding(self._ref, edge.value, value)
