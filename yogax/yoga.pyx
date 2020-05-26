@@ -2,6 +2,7 @@
 # cython: language_level=3
 
 from libc.stdint cimport uint32_t
+from libcpp cimport bool
 from enum import Enum
 
 
@@ -72,11 +73,26 @@ cdef extern from "yoga/yoga/Yoga.h":
         float value
         YGUnit unit
 
+    ctypedef void* YGConfigRef
+    # YGConfig
+    YGConfigRef YGConfigNew()
+    void YGConfigFree(YGConfigRef config)
+    void YGConfigCopy(YGConfigRef dest, YGConfigRef src)
+    # TODO int32_t YGConfigGetInstanceCount(void)
+    # TODO void YGConfigSetExperimentalFeatureEnabled(YGConfigRef config, YGExperimentalFeature feature, bool enabled)
+    # TODO bool YGConfigIsExperimentalFeatureEnabled(YGConfigRef config, YGExperimentalFeature feature);
+
+    # Using the web defaults is the preferred configuration for new projects. Usage
+    # of non web defaults should be considered as legacy.
+    void YGConfigSetUseWebDefaults(YGConfigRef config, bool enabled)
+    bool YGConfigGetUseWebDefaults(YGConfigRef config)
+
     ctypedef void* YGNodeRef
 
     # Lifecycle
 
     YGNodeRef YGNodeNew()
+    YGNodeRef YGNodeNewWithConfig(YGConfigRef config)
     # TODO void YGNodeReset(YGNodeRef node)
     # TODO void YGNodeFree(YGNodeRef node)
     # TODO void YGNodeFreeRecursive(YGNodeRef node)
@@ -218,6 +234,28 @@ class Unit(Enum):
     Percent = YGUnitPercent
     Auto = YGUnitAuto
 
+cdef class Config:
+    cdef YGConfigRef _ref
+
+    @classmethod
+    def create(cls):
+        cdef Config config = cls()
+        config._ref = YGConfigNew()
+        return config
+
+    def copy(self, Config src not None):
+        YGConfigCopy(self._ref, src._ref)
+
+    # Using the web defaults is the preferred configuration for new projects. Usage
+    # of non web defaults should be considered as legacy.
+    @property
+    def use_web_defaults(self):
+        return YGConfigGetUseWebDefaults(self._ref)
+    
+    @use_web_defaults.setter
+    def use_web_defaults(self, enabled):
+        YGConfigSetUseWebDefaults(self._ref, enabled)
+
 
 cdef class Node:
     cdef YGNodeRef _ref
@@ -226,6 +264,12 @@ cdef class Node:
     def create(cls):
         cdef Node node = cls()
         node._ref = YGNodeNew()
+        return node
+
+    @classmethod
+    def create_with_config(cls, Config config not None):
+        cdef Node node = cls()
+        node._ref = YGNodeNewWithConfig(config._ref)
         return node
 
     # Children
