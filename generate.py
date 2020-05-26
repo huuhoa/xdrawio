@@ -63,7 +63,7 @@ def main():
         '-t',
         '--type',
         type=str,
-        help='draw type, possible values: features, roadmap, status',
+        help='draw type, possible values: features, roadmap, status, arch',
         default='features'
     )
 

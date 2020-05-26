@@ -22,6 +22,24 @@ def _load_team(path):
     return 'corepayment.tmpl', all_items, d.configurations
 
 
+def _load_arch(path):
+    import xdrawio.arch
+    import xdrawio.arch.layout
+
+    mdls, d = xdrawio.arch.read_data(path)
+
+    wgs_byteam = xdrawio.arch.layout.layout_workgroup(d.workgroups)
+
+    page = xdrawio.arch.datatypes.Page()
+    page.initialize(mdls, d, wgs_byteam)
+
+    xdrawio.arch.layout.create_layout(page, wgs_byteam, d)
+    # flat out
+    all_items = page.flatten_tree()
+
+    return 'corepayment.tmpl', all_items, d.configurations
+
+
 def _load_bank_status(path):
     import xdrawio.bstatus
 
@@ -52,6 +70,9 @@ def render(t, data_path, page_info):
 
     if t == 'roadmap':
         template_name, items, configs = _load_roadmap(data_path, init_config)
+
+    if t == 'arch':
+        template_name, items, configs = _load_arch(data_path)
 
     if init_config['debug']:
         return

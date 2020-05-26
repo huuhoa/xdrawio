@@ -43,3 +43,12 @@ cp:
 	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_roadmap.pdf cp_roadmap.drawio
 	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_bank_status.pdf cp_bank_status.drawio
 	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_features.pdf cp_features.drawio
+
+arch:
+	rm -f cp.pdf
+	./generate.py -t arch "CorePayment.xlsx" -po landscape > cp.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp.pdf cp.drawio
+	open cp.pdf
+
+test:
+	python3 tests.py
