@@ -13,41 +13,97 @@ class Layout(object):
         self.h = 0
         self.x = 0
         self.y = 0
+        self.code = ''
+        self.attr = {}
 
     def __repr__(self):
         return "{}x{}, {}x{}".format(self.x, self.y, self.w, self.h)
 
-    def layout_children(self, data):
+    def dumps(self):
         raise NotImplementedError
+
+    def replace(self, code, new_node):
+        raise NotImplementedError
+
+    def add_attribute(self, attr):
+        self.attr = attr
 
     def to_dict(self, parent_x=0, parent_y=0):
         return {}
 
 
 class FixLayout(Layout):
-    def __init__(self, code):
+    def __init__(self, code, w, h):
         super().__init__()
         self.code = code
+        self.w = w
+        self.h = h
 
     def __repr__(self):
         return "<F: {}, {}>".format(self.code, super().__repr__())
 
-    def layout_children(self, data):
-        g = data.get(self.code, None)
-        if g is None:
-            return
-        self.w = g.w
-        self.h = g.h
+    def dumps(self):
+        ''' dump current stack to array '''
+        import xdrawio.xutils
 
-    def measure(self, data):
-        g = data.get(self.code, None)
-        if g is None:
-            return
-        self.w = g.w
-        self.h = g.h
+        result = {
+            'id': xdrawio.xutils.randomString(),
+            'type': 'fix',
+            'width': self.w,
+            'height': self.h,
+        }
+        result.update(self.attr)
+
+        return result
+
+    def replace(self, code, new_node):
+        return False
 
     def to_dict(self, parent_x=0, parent_y=0):
         return {self.code: Rect(self.x + parent_x, self.y + parent_y, self.w, self.h)}
+
+
+class GridLayout(Layout):
+    def __init__(self, code):
+        super().__init__()
+        self.items = []
+        self.code = code
+        self._type = "G"
+
+    def __repr__(self):
+        return "<{}: {}, {}>".format(self._type, self.items, super().__repr__())
+
+    def replace(self, code, new_node):
+        for index, child in enumerate(self.items):
+            if child.code == code:
+                self.items[index] = new_node
+                return True
+            if child.replace(code, new_node):
+                return True
+
+        return False
+
+    def dumps(self):
+        ''' dump current stack to array '''
+        import xdrawio.xutils
+
+        children = [item.dumps() for item in self.items]
+        result = {
+            'id': xdrawio.xutils.randomString(),
+            'type': 'grid',
+            'flex-direction': 'column',
+            # 'flex-wrap': 'wrap',
+            'children': children
+        }
+        result.update(self.attr)
+
+        return result
+
+    def to_dict(self, parent_x=0, parent_y=0):
+        result = {}
+        for i in self.items:
+            result.update(i.to_dict(self.x + parent_x, self.y + parent_y))
+        return result
 
 
 class XStack(Layout):
@@ -58,6 +114,16 @@ class XStack(Layout):
 
     def __repr__(self):
         return "<{}: {}, {}>".format(self._type, self.items, super().__repr__())
+
+    def replace(self, code, new_node):
+        for index, child in enumerate(self.items):
+            if child.code == code:
+                self.items[index] = new_node
+                return True
+            if child.replace(code, new_node):
+                return True
+
+        return False
 
     def to_dict(self, parent_x=0, parent_y=0):
         result = {}
@@ -71,80 +137,41 @@ class HStack(XStack):
         super().__init__()
         self._type = "H"
 
-    def layout_children(self, data):
-        for i in self.items:
-            i.layout_children(data)
+    def dumps(self):
+        ''' dump current stack to array '''
+        import xdrawio.xutils
+        children = [item.dumps() for item in self.items]
 
-        w = 0
-        h = 0
-        x = 0
-        for i in self.items:
-            w = w + i.w
-            h = max(h, i.h)
-            i.x = x
-            x = x + i.w + item_horizonal_padding
+        result = {
+            'id': xdrawio.xutils.randomString(),
+            'type': 'container',
+            'flex-direction': 'row',
+            'children': children,
+        }
+        result.update(self.attr)
 
-        w = w + (len(self.items) - 1) * item_horizonal_padding
-        self.w = w
-        self.h = h
+        return result
 
-        # make sure all items have same height -> strech mode
-        for i in self.items:
-            i.h = h
-
-    def measure(self, data):
-        for i in self.items:
-            i.measure(data)
-
-        w = 0
-        h = 0
-        for i in self.items:
-            w = w + i.w
-            h = max(h, i.h)
-
-        w = w + (len(self.items) - 1) * item_horizonal_padding
-        self.w = w
-        self.h = h
 
 class VStack(XStack):
     def __init__(self):
         super().__init__()
         self._type = "V"
 
-    def layout_children(self, data):
-        for i in self.items:
-            i.layout_children(data)
+    def dumps(self):
+        ''' dump current stack to array '''
+        import xdrawio.xutils
+        children = [item.dumps() for item in self.items]
 
-        w = 0
-        h = 0
-        y = 0
-        for i in self.items:
-            w = max(w, i.w)
-            h = h + i.h
-            i.y = y
-            y = y + i.h + item_vertical_padding
+        result = {
+            'id': xdrawio.xutils.randomString(),
+            'type': 'container',
+            'flex-direction': 'column',
+            'children': children,
+        }
+        result.update(self.attr)
 
-        h = h + (len(self.items) - 1) * item_vertical_padding
-        self.w = w
-        self.h = h
-
-        # make sure all items have same width -> strech mode
-        for i in self.items:
-            i.w = w
-
-    def measure(self, data):
-        for i in self.items:
-            i.measure(data)
-
-        w = 0
-        h = 0
-        for i in self.items:
-            w = max(w, i.w)
-            h = h + i.h
-
-        h = h + (len(self.items) - 1) * item_vertical_padding
-        self.w = w
-        self.h = h
+        return result
 
 
 def H(*inputs):

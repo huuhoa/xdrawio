@@ -94,8 +94,12 @@ cdef extern from "yoga/yoga/Yoga.h":
     YGNodeRef YGNodeNew()
     YGNodeRef YGNodeNewWithConfig(YGConfigRef config)
     # TODO void YGNodeReset(YGNodeRef node)
-    # TODO void YGNodeFree(YGNodeRef node)
+    void YGNodeFree(YGNodeRef node)
     # TODO void YGNodeFreeRecursive(YGNodeRef node)
+
+    # context
+    void* YGNodeGetContext(YGNodeRef node)
+    void YGNodeSetContext(YGNodeRef node, void* context)
 
     # Children
 
@@ -259,6 +263,14 @@ cdef class Config:
 
 cdef class Node:
     cdef YGNodeRef _ref
+    # cdef object context_
+
+    # def __cinit__(self):
+        # self.context_ = None
+    
+    # def __dealloc__(self):
+    #     if self._ref is not None:
+    #         YGNodeFree(self._ref)
 
     @classmethod
     def create(cls):
@@ -271,6 +283,13 @@ cdef class Node:
         cdef Node node = cls()
         node._ref = YGNodeNewWithConfig(config._ref)
         return node
+
+    # Extra Property
+    property context:
+        def __get__(self):
+            return <object>YGNodeGetContext(self._ref)
+        def __set__(self, x_):
+            YGNodeSetContext(self._ref, <void *>x_)
 
     # Children
 

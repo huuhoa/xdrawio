@@ -50,5 +50,14 @@ arch:
 	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp.pdf cp.drawio
 	open cp.pdf
 
+arch-test:
+	@./generate.py -t arch "CorePayment.xlsx" -d True -po landscape
+
+arch-test-1:
+	@./generate.py -t arch layout.xlsx -d True -po landscape > layout.json
+	@./layout.py > layout.drawio
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout.pdf layout.drawio
+	@open layout.pdf
+
 test:
 	python3 tests.py

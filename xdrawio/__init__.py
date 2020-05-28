@@ -24,20 +24,8 @@ def _load_team(path):
 
 def _load_arch(path):
     import xdrawio.arch
-    import xdrawio.arch.layout
-
-    mdls, d = xdrawio.arch.read_data(path)
-
-    wgs_byteam = xdrawio.arch.layout.layout_workgroup(d.workgroups)
-
-    page = xdrawio.arch.datatypes.Page()
-    page.initialize(mdls, d, wgs_byteam)
-
-    xdrawio.arch.layout.create_layout(page, wgs_byteam, d)
-    # flat out
-    all_items = page.flatten_tree()
-
-    return 'corepayment.tmpl', all_items, d.configurations
+    items, configs = xdrawio.arch.load_data(path)
+    return 'corepayment.tmpl', items, configs
 
 
 def _load_bank_status(path):

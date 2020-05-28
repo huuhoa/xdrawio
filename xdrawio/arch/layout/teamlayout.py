@@ -25,7 +25,7 @@ class TeamLayout(object):
             # default layout
             self.ls = HStack()
             for group in self.team.groups.values():
-                self.ls.items.append(FixLayout(group.code))
+                self.ls.items.append(FixLayout(group.code, 0, 0))
 
     def measure(self):
         # first mesure all children width and height

@@ -16,7 +16,7 @@ def cvtV(toks):
     return s
 
 def cvtIdentity(toks):
-    return FixLayout(toks[0])
+    return FixLayout(toks[0], 0, 0)
 
 def _layoutDSL():
     # define punctuation as suppressed literals
