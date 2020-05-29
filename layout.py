@@ -36,6 +36,12 @@ def add_flex_wrap(yn, node):
     yn.flex_wrap = mapping[fd]
 
 
+def add_flex(yn, node):
+    if 'flex' not in node:
+        return
+    yn.set_flex(node['flex'])
+
+
 def add_width(yn, node):
     if 'width' not in node:
         return
@@ -156,6 +162,7 @@ def create_node(node):
     yn = yoga.Node.create_with_config(config)
     yn.context = node
     operators = [
+        add_flex,
         add_flex_direction,
         add_flex_wrap,
         add_margin,
@@ -261,8 +268,8 @@ env = Environment(
 template = env.get_template(template_name)
 
 page_info = {
-    'width': 9933,
-    'height': 7016
+    'width': 3508,
+    'height': 3508
 }
 configs = {}
 
