@@ -24,7 +24,9 @@ Clone and install pyyoga - visit https://github.com/huuhoa/pyyoga
 ```
 usage: generate.py [-h] [-d DEBUG] [-ps {A0,A1,A2,A3,A4,A5,A6}]
                    [-po {portrait,landscape}]
-                   [-t {arch,features,roadmap,status}]
+                   [-t {arch,features,roadmap,status}] [-o [OUTPUT]]
+                   [--write_layout_tree WRITE_LAYOUT_TREE] [-lt LAYOUT_TREE]
+                   [-e EXPERIMENT]
                    path
 
 Render data to drawio file format.
@@ -44,6 +46,15 @@ optional arguments:
   -t {arch,features,roadmap,status}, --type {arch,features,roadmap,status}
                         draw type, possible values: features, roadmap, status,
                         arch
+  -o [OUTPUT], --output [OUTPUT]
+                        Output drawio file
+  --write_layout_tree WRITE_LAYOUT_TREE
+                        Enable to write layout tree to a file, specified by
+                        --layout-tree parameter
+  -lt LAYOUT_TREE, --layout_tree LAYOUT_TREE
+                        File to store layout tree
+  -e EXPERIMENT, --experiment EXPERIMENT
+                        Enable experiment new features
 
 Enjoy!
 ```
