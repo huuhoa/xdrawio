@@ -44,7 +44,7 @@ def main():
         '-ps',
         '--page-size',
         type=str,
-        metavar="size",
+        choices=['A0', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6'],
         help='page size, possible values: A0, A1, A2, A3, A4, A5, A6',
         default='A3'
     )
@@ -52,8 +52,8 @@ def main():
     parser.add_argument(
         '-po',
         '--page-orientation',
-        metavar="orientation",
         type=str,
+        choices=['portrait', 'landscape'],
         help='page orientation, possible values: portrait, landscape',
         default='portrait'
     )
@@ -62,6 +62,7 @@ def main():
         '-t',
         '--type',
         type=str,
+        choices=['arch', 'features', 'roadmap', 'status'],
         help='draw type, possible values: features, roadmap, status, arch',
         default='features'
     )
