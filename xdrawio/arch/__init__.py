@@ -43,9 +43,6 @@ def generate_layout_spec(path):
         replace_node(ls, team.code, ltree)
 
     return ls.dumps()
-    # print(json.dumps(ls.dumps(), sort_keys=True, indent=2))
-
-    # return [], {}
 
 
 def replace_node(root, code, new_node):
@@ -79,6 +76,10 @@ def create_group_node(group, configs):
     if len(group.items) > 9:
         max_items = 4
 
+    # because yoga does not support Grid
+    # here we use trick to create a Vertical stack - same as row in Grid -
+    # that will contains series of Horizontal stack (columns)
+    # and each Horizontal stack will contains module item (maximum number is max_items)
     for i in range(0, len(group.items), max_items):
         hs = HStack()
         for index in range(i, min(i+max_items, len(group.items))):
