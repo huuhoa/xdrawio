@@ -10,6 +10,7 @@ from jinja2.utils import select_autoescape
 config = yoga.Config.create()
 config.use_web_defaults = True
 
+
 def add_flex_direction(yn, node):
     if 'flex-direction' not in node:
         return
@@ -22,6 +23,7 @@ def add_flex_direction(yn, node):
     }
     yn.flex_direction = mapping[fd]
 
+
 def add_flex_wrap(yn, node):
     if 'flex-wrap' not in node:
         return
@@ -33,20 +35,24 @@ def add_flex_wrap(yn, node):
     }
     yn.flex_wrap = mapping[fd]
 
+
 def add_width(yn, node):
     if 'width' not in node:
         return
     yn.width = node['width']
+
 
 def add_height(yn, node):
     if 'height' not in node:
         return
     yn.height = node['height']
 
+
 def add_max_width(yn, node):
     if 'max-width' not in node:
         return
     yn.max_width = node['max-width']
+
 
 def add_padding(yn, node):
     if 'padding' not in node:
@@ -65,6 +71,7 @@ def add_padding(yn, node):
         if key in padding:
             yn.set_padding(value, padding[key])
 
+
 def add_margin(yn, node):
     if 'margin' not in node:
         return
@@ -82,6 +89,7 @@ def add_margin(yn, node):
         if key in margin:
             yn.set_margin(value, margin[key])
 
+
 def add_align_items(yn, node):
     if 'align-items' not in node:
         return
@@ -96,6 +104,7 @@ def add_align_items(yn, node):
         'space-around': yoga.Align.SpaceAround,
     }
     yn.align_items = mapping[node['align-items']]
+
 
 def add_align_self(yn, node):
     if 'align-self' not in node:
@@ -112,6 +121,7 @@ def add_align_self(yn, node):
     }
     yn.align_self = mapping[node['align-self']]
 
+
 def add_justify_content(yn, node):
     if 'justify-content' not in node:
         return
@@ -124,6 +134,7 @@ def add_justify_content(yn, node):
         'space-evenly': yoga.Justify.SpaceEvenly,
     }
     yn.justify_content = mapping[node['justify-content']]
+
 
 def add_align_content(yn, node):
     if 'align-content' not in node:
@@ -139,6 +150,7 @@ def add_align_content(yn, node):
         'space-around': yoga.Align.SpaceAround,
     }
     yn.align_content = mapping[node['align-content']]
+
 
 def create_node(node):
     yn = yoga.Node.create_with_config(config)
@@ -175,14 +187,15 @@ def dump_node(root, indent=0):
         suffix = '}'
     ident_str = ''.join([' ' for i in range(indent*2)])
     print("%s{left: %d, top: %d, width: %d, height: %d%s" % (ident_str,
-        root.calculated_left, root.calculated_top,
-        root.calculated_width, root.calculated_height,
-        suffix))
+                                                             root.calculated_left, root.calculated_top,
+                                                             root.calculated_width, root.calculated_height,
+                                                             suffix))
 
     for child in root.children:
         dump_node(child, indent+1)
     if root.child_count > 0:
         print(']}')
+
 
 def flatten_tree(root, parent_id=''):
     result = []
@@ -202,7 +215,7 @@ def flatten_tree(root, parent_id=''):
             xclass = root.context.get('type', '')
         style = root.context.get('style', None)
         extra = root.context.get('extra', None)
-    
+
     result.append({
         'x': root.calculated_left,
         'y': root.calculated_top,
@@ -220,6 +233,7 @@ def flatten_tree(root, parent_id=''):
         result = result + children
 
     return result
+
 
 input = 'layout.json'
 template_name = 'generic.tmpl'
@@ -239,8 +253,8 @@ all_items = flatten_tree(yn, '3')
 env = Environment(
     loader=FileSystemLoader('./templates'),
     autoescape=select_autoescape(['html', 'xml']),
-    trim_blocks = True,
-    lstrip_blocks = True,
+    trim_blocks=True,
+    lstrip_blocks=True,
     line_statement_prefix='#',
 )
 
@@ -253,6 +267,6 @@ page_info = {
 configs = {}
 
 print(template.render(
-        items=all_items,
-        configs=configs,
-        page=page_info))
+    items=all_items,
+    configs=configs,
+    page=page_info))
