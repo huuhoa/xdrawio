@@ -1,6 +1,0 @@
-[submodule "yoga"]
-	path = yogax/yoga
-	url = git@github.com:facebook/yoga.git
-[submodule "yogax/yoga"]
-	path = yogax/yoga
-	url = git@github.com:facebook/yoga.git
