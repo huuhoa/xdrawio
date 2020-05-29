@@ -1,5 +1,6 @@
 from xdrawio.arch.datatypes import Shape
 
+
 class Page(Shape):
     r"""Page contains:
         - list of teams

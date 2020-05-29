@@ -1,5 +1,6 @@
 from xdrawio.arch.datatypes import Shape
 
+
 class Team(Shape):
     type = "team"
 

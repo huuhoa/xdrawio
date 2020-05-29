@@ -1,7 +1,8 @@
 from xdrawio.arch.dataloader import read_data
-import xdrawio
-from xdrawio.arch.layout.stacklayout import FixLayout, GridLayout, HStack, VStack
+from xdrawio.arch.layout.stacklayout import FixLayout, GridLayout
+from xdrawio.arch.layout.stacklayout import HStack, VStack
 from xdrawio.arch.layout.layoutparser import parseLayoutSpec
+
 
 def load_data(path):
     import xdrawio.arch.layout
@@ -31,8 +32,8 @@ def load_data(path):
         ltree = create_team_node(team, d.layoutspec, d.configurations)
         # 2.2 add team spec for layout tree
         ltree.add_attribute({
-            'padding': { 'top': 100, 'left': 10, 'bottom': 10, 'right': 10 },
-            'margin': { 'all': 10 },
+            'padding': {'top': 100, 'left': 10, 'bottom': 10, 'right': 10},
+            'margin': {'all': 10},
             'display_name': team_info['display_name'],
             'class': 'team',
             'style': d.configurations[team_info['style']]
@@ -49,7 +50,7 @@ def load_data(path):
 def replace_node(root, code, new_node):
     root.replace(code, new_node)
 
-    
+
 def create_team_node(team, layoutspec, configs):
     # step 1: create layout specification at team level, leaf nodes are groups
     spec = layoutspec.get(team.code, None)
@@ -84,7 +85,7 @@ def create_group_node(group, configs):
             item = FixLayout(m.display_name, m.w, m.h)
             item.add_attribute({
                 'display_name': m.display_name,
-                'margin': { 'all': 10 },
+                'margin': {'all': 10},
                 'extra': {
                     'wg_style': configs[m.wg_stype],
                     'status_style': configs[m.status],
@@ -95,8 +96,8 @@ def create_group_node(group, configs):
         ls.items.append(hs)
 
     ls.add_attribute({
-        'padding': { 'top': 100, 'left': 10, 'bottom': 10, 'right': 10 },
-        'margin': { 'all': 10 },
+        'padding': {'top': 100, 'left': 10, 'bottom': 10, 'right': 10},
+        'margin': {'all': 10},
         'class': 'group',
         'flex-direction': 'column-reverse',
         'display_name': group.display_name,

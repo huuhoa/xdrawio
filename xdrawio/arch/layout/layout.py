@@ -6,7 +6,7 @@ def layout_workgroup(wgs):
     by_team = {}
     for wg in wgs.values():
         if wg["team"] not in by_team:
-            by_team[wg["team"]] = { 
+            by_team[wg["team"]] = {
                 0: {},
                 1: {},
                 2: {},
@@ -26,7 +26,7 @@ def layout_workgroup(wgs):
             ti["type"] = "wg"
             ti["id"] = xdrawio.xutils.randomString()
             ti["display_name"] = "&lt;br/&gt;".join(ti.get("members", ""))
-        
+
         # recaliberate team 0 height
         h = 0
         for i in range(1, 5):
@@ -40,4 +40,3 @@ def layout_workgroup(wgs):
         # print(team)
 
     return by_team
-

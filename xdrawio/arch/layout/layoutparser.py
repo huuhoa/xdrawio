@@ -2,21 +2,26 @@ import pyparsing as pp
 
 from .stacklayout import *
 
+
 def ParseSpec(layoutspec):
     return eval(layoutspec)
+
 
 def cvtH(toks):
     s = HStack()
     s.items = toks.asList()
     return s
 
+
 def cvtV(toks):
     s = VStack()
     s.items = toks.asList()
     return s
 
+
 def cvtIdentity(toks):
     return FixLayout(toks[0], 0, 0)
+
 
 def _layoutDSL():
     # define punctuation as suppressed literals
@@ -46,7 +51,9 @@ def _layoutDSL():
 
     return layoutItem
 
+
 layoutItem = _layoutDSL()
+
 
 def parseLayoutSpec(spec):
     result = layoutItem.parseString(spec)

@@ -1,5 +1,6 @@
 import xdrawio.xutils
 
+
 def read_team_data(data):
     td = {}
     header = None
@@ -18,7 +19,7 @@ def read_team_data(data):
             "display_name": xdrawio.xutils.encode_name(cols[1]),
             "style": cols[3],
         }
-    
+
     return td
 
 
@@ -125,19 +126,19 @@ def read_module_data(wb):
 
 
 def read_data(file_path):
-    # Reading an excel file using Python 
+    # Reading an excel file using Python
     import openpyxl
 
     d = Data()
 
-    # To open Workbook 
+    # To open Workbook
     wb = openpyxl.load_workbook(file_path)
 
     d.configurations = xdrawio.xutils.read_configuration_data(wb)
 
     ws = wb["Teams"]
-    
-    # For row 0 and column 0 
+
+    # For row 0 and column 0
     for tbl in ws._tables:
         # print(tbl.name)
         # Grab the 'data' from the table
@@ -165,6 +166,4 @@ def read_data(file_path):
         # except KeyError as identifier:
         #     print(identifier)
 
-
     return mdls, d
-

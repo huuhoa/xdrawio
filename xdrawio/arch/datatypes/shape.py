@@ -1,7 +1,9 @@
 import xdrawio.xutils
 
+
 class Shape(object):
     type = "unknnown"
+
     def __init__(self):
         self.id = xdrawio.xutils.randomString()
         self.x = 0

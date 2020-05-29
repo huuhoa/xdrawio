@@ -2,6 +2,7 @@
 
 import xdrawio
 
+
 def get_page_dimention(page_size, page_orientation):
     sizes = {
         'A0': (9933, 14043),
@@ -22,15 +23,13 @@ def get_page_dimention(page_size, page_orientation):
         return 0, 0
 
 
-
 def main():
     import argparse
-
 
     parser = argparse.ArgumentParser(
         description='Render data to drawio file format.',
         epilog='Enjoy!'
-        )
+    )
     parser.version = "1.0"
     parser.add_argument('path', metavar='path', type=str,
                         help='path to xlsx file that contains team structure')

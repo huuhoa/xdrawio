@@ -1,5 +1,6 @@
 from xdrawio.arch.datatypes import Shape
 
+
 class Group(Shape):
     type = "group"
 
@@ -7,4 +8,3 @@ class Group(Shape):
         super().__init__()
         self.code = ""
         self.items = []
-

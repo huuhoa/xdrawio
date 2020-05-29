@@ -1,6 +1,7 @@
 from xdrawio.arch.datatypes import Shape
 import xdrawio.xutils
 
+
 class Module(Shape):
     item_height = 50
     item_width = 180
@@ -33,6 +34,5 @@ def convert_status(status):
         return "StatusStyle1"
     if status == "Completed":
         return "StatusStyle2"
-    
-    return "StatusStyleU"
 
+    return "StatusStyleU"

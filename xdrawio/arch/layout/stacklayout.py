@@ -6,6 +6,7 @@ item_vertical_padding = 20
 
 Rect = namedtuple('Rect', 'x y w h')
 
+
 class Layout(object):
     def __init__(self):
         super().__init__()
@@ -183,6 +184,7 @@ def H(*inputs):
             h.items.append(i)
 
     return h
+
 
 def V(*inputs):
     v = VStack()

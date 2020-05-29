@@ -1,7 +1,8 @@
-__version_info__ = (0,3,0)
+__version_info__ = (0, 4, 0)
 __version__ = '.'.join([str(__value) for __value in __version_info__])
 __copyright__ = '2020, NGUYEN Huu Hoa'
 __license__ = 'MIT'
+
 
 def _load_team(path):
     from xdrawio.features.layout import create_layout, layout_workgroup
@@ -68,14 +69,14 @@ def render(t, data_path, page_info):
     env = Environment(
         loader=FileSystemLoader('./templates'),
         autoescape=select_autoescape(['html', 'xml']),
-        trim_blocks = True,
-        lstrip_blocks = True,
+        trim_blocks=True,
+        lstrip_blocks=True,
         line_statement_prefix='#',
     )
 
     template = env.get_template(template_name)
 
     print(template.render(
-            items=items,
-            configs=configs,
-            page=page_info))
+        items=items,
+        configs=configs,
+        page=page_info))
