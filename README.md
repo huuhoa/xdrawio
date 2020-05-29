@@ -16,10 +16,16 @@ Need to run following command to install prerequisite python packages:
 $ pip3 install pyparsing openpyxl jinja2
 ```
 
+Clone and install pyyoga - visit https://github.com/huuhoa/pyyoga
+
+
 ## Usage
 
 ```
-usage: generate.py [-h] [-d DEBUG] [-ps size] [-po orientation] [-t TYPE] path
+usage: generate.py [-h] [-d DEBUG] [-ps {A0,A1,A2,A3,A4,A5,A6}]
+                   [-po {portrait,landscape}]
+                   [-t {arch,features,roadmap,status}]
+                   path
 
 Render data to drawio file format.
 
@@ -31,11 +37,13 @@ optional arguments:
   -d DEBUG, --debug DEBUG
                         debug flag, when enable only print debug data, not
                         print drawio data
-  -ps size, --page-size size
+  -ps {A0,A1,A2,A3,A4,A5,A6}, --page-size {A0,A1,A2,A3,A4,A5,A6}
                         page size, possible values: A0, A1, A2, A3, A4, A5, A6
-  -po orientation, --page-orientation orientation
+  -po {portrait,landscape}, --page-orientation {portrait,landscape}
                         page orientation, possible values: portrait, landscape
-  -t TYPE, --type TYPE  draw type, possible values: features, roadmap, status
+  -t {arch,features,roadmap,status}, --type {arch,features,roadmap,status}
+                        draw type, possible values: features, roadmap, status,
+                        arch
 
 Enjoy!
 ```
