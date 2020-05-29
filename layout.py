@@ -6,6 +6,8 @@ import xdrawio.xutils
 from jinja2.environment import Environment
 from jinja2.loaders import FileSystemLoader
 from jinja2.utils import select_autoescape
+import argparse
+import sys
 
 config = yoga.Config.create()
 config.use_web_defaults = True
@@ -242,38 +244,94 @@ def flatten_tree(root, parent_id=''):
     return result
 
 
-input = 'layout.json'
-template_name = 'generic.tmpl'
+def parse_argument():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input', nargs='?', type=argparse.FileType('r'),
+                        default=sys.stdin)
+    parser.add_argument('-o', '--output', nargs='?', type=argparse.FileType('w'),
+                        default=sys.stdout)
 
-with open(input, 'r') as fi:
-    data = json.load(fi)
+    parser.add_argument(
+        '-ps',
+        '--page-size',
+        type=str,
+        choices=['A0', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6'],
+        help='page size, possible values: A0, A1, A2, A3, A4, A5, A6',
+        default='A3'
+    )
+
+    parser.add_argument(
+        '-po',
+        '--page-orientation',
+        type=str,
+        choices=['portrait', 'landscape'],
+        help='page orientation, possible values: portrait, landscape',
+        default='portrait'
+    )
+
+    parser.add_argument(
+        '-t',
+        '--template',
+        type=str,
+        help='template file to render data',
+        default='generic.tmpl'
+    )
+    return parser.parse_args()
 
 
-yn = create_node(data)
-yn.calculate_layout()
-# dump_node(yn)
+def get_page_dimention(page_size, page_orientation):
+    sizes = {
+        'A0': (9933, 14043),
+        'A1': (7016, 9933),
+        'A2': (4961, 7016),
+        'A3': (3508, 4961),
+        'A4': (2480, 3508),
+        'A5': (1754, 2480),
+        'A6': (1240, 1754),
+    }
 
-all_items = flatten_tree(yn, '3')
-# print(all_items)
-# print(data)
+    ps = sizes[page_size]
+    if page_orientation == 'portrait':
+        return ps[0], ps[1]
+    elif page_orientation == 'landscape':
+        return ps[1], ps[0]
+    else:
+        return 0, 0
 
-env = Environment(
-    loader=FileSystemLoader('./templates'),
-    autoescape=select_autoescape(['html', 'xml']),
-    trim_blocks=True,
-    lstrip_blocks=True,
-    line_statement_prefix='#',
-)
 
-template = env.get_template(template_name)
+def main():
+    args = parse_argument()
 
-page_info = {
-    'width': 3508,
-    'height': 3508
-}
-configs = {}
+    data = json.load(args.input)
 
-print(template.render(
-    items=all_items,
-    configs=configs,
-    page=page_info))
+    yn = create_node(data)
+    yn.calculate_layout()
+
+    all_items = flatten_tree(yn, '3')
+
+    env = Environment(
+        loader=FileSystemLoader('./templates'),
+        autoescape=select_autoescape(['html', 'xml']),
+        trim_blocks=True,
+        lstrip_blocks=True,
+        line_statement_prefix='#',
+    )
+
+    template = env.get_template(args.template)
+
+    w, h = get_page_dimention(args.page_size, args.page_orientation)
+
+    page_info = {
+        'width': w,
+        'height': h,
+    }
+    configs = {}
+
+    args.output.write(template.render(
+        items=all_items,
+        configs=configs,
+        page=page_info))
+
+
+if __name__ == "__main__":
+    main()
