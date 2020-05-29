@@ -1,4 +1,4 @@
-from xdrawio.features.datatypes import Shape
+from xdrawio.arch.datatypes import Shape
 
 class Group(Shape):
     type = "group"

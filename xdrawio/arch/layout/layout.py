@@ -1,5 +1,3 @@
-from .layoutparser import parseLayoutSpec 
-from .pagelayout import PageLayout
 import xdrawio.xutils
 
 
@@ -43,15 +41,3 @@ def layout_workgroup(wgs):
 
     return by_team
 
-
-def create_layout(page, wgs_byteam, data):
-    from xdrawio.features.datatypes import Team, Group
-
-    # first pass, layout all items inside group
-    pl = PageLayout(page, data.layoutspec)
-    pl.measure()
-    pl.layout_children()
-    # fourth pass, move working group to top-left of each team
-    # for team in page.teams.values():
-    #     # move_workgroup_to(wgs_byteam[team.code], team.x - 120, team.y)
-    #     move_workgroup_to(wgs_byteam[team.code], team.x, team.y)

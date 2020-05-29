@@ -192,12 +192,16 @@ def flatten_tree(root, parent_id=''):
         value = "NONE"
         id = xdrawio.xutils.randomString()
         xclass = 'undefined'
+        style = None
+        extra = None
     else:
         value = root.context.get('display_name', '')
         id = context['id']
         xclass = root.context.get('class', None)
         if xclass is None:
             xclass = root.context.get('type', '')
+        style = root.context.get('style', None)
+        extra = root.context.get('extra', None)
     
     result.append({
         'x': root.calculated_left,
@@ -208,6 +212,8 @@ def flatten_tree(root, parent_id=''):
         'parent_id': parent_id,
         'value': value,
         'class': xclass,
+        'style': style,
+        'extra': extra,
     })
     for child in root.children:
         children = flatten_tree(child, id)
