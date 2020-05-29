@@ -54,10 +54,24 @@ arch-test:
 	@./generate.py -t arch "CorePayment.xlsx" -d True -po landscape
 
 arch-test-1:
-	@./generate.py -t arch layout.xlsx -d True -po landscape > layout.json
-	@./layout.py > layout.drawio
+	@./generate.py -t arch layout.xlsx -d True -po landscape | ./layout.py -o layout.drawio
 	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout.pdf layout.drawio
 	@open layout.pdf
+
+arch-test-2:
+	@./generate.py -t arch CorePayment.xlsx -d True -po landscape | ./layout.py -o layout.drawio
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout.pdf layout.drawio
+	@open layout.pdf
+
+arch-test-3:
+	@./generate.py -e True -o layout1.drawio -t arch CorePayment.xlsx
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout1.pdf layout1.drawio
+	@open layout1.pdf
+
+arch-test-4:
+	@./generate.py -e True -lt layout1.json --write_layout_tree True -o layout1.drawio -t arch CorePayment.xlsx
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout1.pdf layout1.drawio
+	@open layout1.pdf
 
 test:
 	python3 tests.py

@@ -3,6 +3,8 @@ __version__ = '.'.join([str(__value) for __value in __version_info__])
 __copyright__ = '2020, NGUYEN Huu Hoa'
 __license__ = 'MIT'
 
+from .experiment import experiment
+
 
 def _load_team(path):
     from xdrawio.features.layout import create_layout, layout_workgroup
@@ -21,12 +23,6 @@ def _load_team(path):
     all_items = page.flatten_tree()
 
     return 'corepayment.tmpl', all_items, d.configurations
-
-
-def _load_arch(path):
-    import xdrawio.arch
-    items, configs = xdrawio.arch.load_data(path)
-    return 'corepayment.tmpl', items, configs
 
 
 def _load_bank_status(path):
@@ -59,9 +55,6 @@ def render(t, data_path, page_info):
 
     if t == 'roadmap':
         template_name, items, configs = _load_roadmap(data_path, init_config)
-
-    if t == 'arch':
-        template_name, items, configs = _load_arch(data_path)
 
     if init_config['debug']:
         return

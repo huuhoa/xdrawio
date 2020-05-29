@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import xdrawio
+import sys
 
 
 def get_page_dimention(page_size, page_orientation):
@@ -67,6 +68,30 @@ def main():
         default='features'
     )
 
+    parser.add_argument('-o', '--output', nargs='?', type=argparse.FileType('w'),
+                        default=sys.stdout,
+                        help='Output drawio file')
+    parser.add_argument(
+        '--write_layout_tree',
+        type=bool,
+        help='Enable to write layout tree to a file, specified by --layout-tree parameter',
+        default=False,
+    )
+    parser.add_argument(
+        '-lt',
+        '--layout_tree',
+        type=argparse.FileType('w'),
+        help='File to store layout tree',
+    )
+
+    parser.add_argument(
+        '-e',
+        '--experiment',
+        type=bool,
+        help='Enable experiment new features',
+        default=False,
+    )
+
     args = parser.parse_args()
 
     w, h = get_page_dimention(args.page_size, args.page_orientation)
@@ -75,6 +100,10 @@ def main():
         "height": h,
         'debug': args.debug,
     }
+
+    if args.experiment:
+        xdrawio.experiment(args, page)
+        return
 
     xdrawio.render(args.type, args.path, page)
 

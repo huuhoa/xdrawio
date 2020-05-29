@@ -4,7 +4,7 @@ from xdrawio.arch.layout.stacklayout import HStack, VStack
 from xdrawio.arch.layout.layoutparser import parseLayoutSpec
 
 
-def load_data(path):
+def generate_layout_spec(path):
     import xdrawio.arch.layout
     import json
 
@@ -42,9 +42,10 @@ def load_data(path):
         # 2.3 replace layout tree with team node in root
         replace_node(ls, team.code, ltree)
 
-    print(json.dumps(ls.dumps(), sort_keys=True, indent=2))
+    return ls.dumps()
+    # print(json.dumps(ls.dumps(), sort_keys=True, indent=2))
 
-    return [], {}
+    # return [], {}
 
 
 def replace_node(root, code, new_node):
