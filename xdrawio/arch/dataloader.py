@@ -1,65 +1,17 @@
-import xdrawio.xutils
-
-
-def read_table_from_wb(wb, sheet_name, table_name):
-    ws = wb[sheet_name]
-    for tbl in ws._tables:
-        if tbl.name == table_name:
-            return ws[tbl.ref]
-
-    return None
-
-
-def transform_table_to_frame(table):
-    ''' transform input (array of array) to output (array of dict)'''
-    d = []
-    header = None
-    for row in table:
-        # Get a list of all columns in each row
-        cols = []
-        for col in row:
-            cols.append(col.value)
-
-        if header is None:
-            header = cols
-            continue
-
-        item = {header[i]: cols[i] for i in range(len(cols))}
-        d.append(item)
-    return d
-
-
-def transform_table_to_dict(table, key_func):
-    ''' transform input (array of array) to output (dict of dict)'''
-    d = {}
-    header = None
-    for row in table:
-        # Get a list of all columns in each row
-        cols = []
-        for col in row:
-            cols.append(col.value)
-
-        if header is None:
-            header = cols
-            continue
-
-        item = {header[i]: cols[i] for i in range(len(cols))}
-        key = key_func(item)
-        d[key] = item
-    return d
+from xdrawio.xutils import encode_name, transform_table_to_dict, read_configuration_data
 
 
 def read_domain_data(data):
-    td = transform_table_to_dict(data, lambda item: item['Code'])
+    td = transform_table_to_dict(data)
     for k, v in td.items():
-        v['Domain Name'] = xdrawio.xutils.encode_name(v['Domain Name'])
+        v['Domain Name'] = encode_name(v['Domain Name'])
     return td
 
 
 def read_group_data(data):
-    d = transform_table_to_dict(data, lambda item: item['Group Code'])
+    d = transform_table_to_dict(data)
     for k, v in d.items():
-        v['Group Name'] = xdrawio.xutils.encode_name(v['Group Name'])
+        v['Group Name'] = encode_name(v['Group Name'])
 
     return d
 
@@ -155,7 +107,7 @@ def read_data(file_path):
     # To open Workbook
     wb = openpyxl.load_workbook(file_path)
 
-    d.configurations = xdrawio.xutils.read_configuration_data(wb)
+    d.configurations = read_configuration_data(wb)
 
     ws = wb["Teams"]
 
