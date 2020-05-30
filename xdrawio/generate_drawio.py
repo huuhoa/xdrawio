@@ -60,6 +60,24 @@ def add_max_width(yn, node):
     yn.max_width = node['max-width']
 
 
+def add_max_height(yn, node):
+    if 'max-height' not in node:
+        return
+    yn.max_height = node['max-height']
+
+
+def add_min_width(yn, node):
+    if 'min-width' not in node:
+        return
+    yn.min_width = node['min-width']
+
+
+def add_min_height(yn, node):
+    if 'min-height' not in node:
+        return
+    yn.min_height = node['min-height']
+
+
 def add_padding(yn, node):
     if 'padding' not in node:
         return
@@ -170,6 +188,9 @@ def create_node(node):
         add_width,
         add_height,
         add_max_width,
+        add_max_height,
+        add_min_width,
+        add_min_height,
         add_align_content,
         add_align_items,
         add_align_self,
@@ -224,12 +245,15 @@ def flatten_tree(root, parent_id=''):
     return result
 
 
-def generate_drawio(ls_tree, args, configs):
+def generate_drawio(ls_tree):
     yn = create_node(ls_tree)
     yn.calculate_layout()
 
     all_items = flatten_tree(yn, '3')
+    return all_items
 
+
+def render_drawio(all_items, args, configs):
     env = Environment(
         loader=FileSystemLoader('./templates'),
         autoescape=select_autoescape(['html', 'xml']),

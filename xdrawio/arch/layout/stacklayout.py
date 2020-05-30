@@ -50,9 +50,11 @@ class FixLayout(Layout):
         result = {
             'id': xdrawio.xutils.randomString(),
             'type': 'fix',
-            'width': self.w,
-            'height': self.h,
         }
+        if self.w > 0:
+            result['width'] = self.w
+        if self.h > 0:
+            result['height'] = self.h
         result.update(self.attr)
 
         return result
