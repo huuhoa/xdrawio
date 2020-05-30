@@ -1,7 +1,7 @@
 from xdrawio.arch.datatypes import Shape
 
 
-class Team(Shape):
+class Domain(Shape):
     type = "team"
 
     def __init__(self):

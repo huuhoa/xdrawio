@@ -22,21 +22,21 @@ def generate_layout_spec(path):
     else:
         # default layout
         ls = HStack()
-        for team in page.teams.values():
+        for team in page.domains.values():
             ls.items.append(FixLayout(team.code, 0, 0))
 
     # Step 2: layout spec for team
-    for team in page.teams.values():
-        team_info = d.teams[team.code]
+    for team in page.domains.values():
+        team_info = d.domains[team.code]
         # 2.1 layout spec for team, result a layout tree
         ltree = create_team_node(team, d.layoutspec, d.configurations)
         # 2.2 add team spec for layout tree
         ltree.add_attribute({
             'padding': {'top': 100, 'left': 10, 'bottom': 10, 'right': 10},
             'margin': {'all': 10},
-            'display_name': team_info['display_name'],
-            'class': 'team',
-            'style': d.configurations[team_info['style']]
+            'display_name': team_info['Domain Name'],
+            'class': 'domain',
+            'style': d.configurations[team_info['Style']]
         })
 
         # 2.3 replace layout tree with team node in root

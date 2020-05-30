@@ -142,6 +142,11 @@ class HStack(XStack):
         ''' dump current stack to array '''
         import xdrawio.xutils
         children = [item.dumps() for item in self.items]
+        if len(children) >= 2:
+            # try make last item fill remaining space
+            last_child = children[len(children)-1]
+            if last_child.get('class') == 'domain':
+                last_child.update({'flex': 1})
 
         result = {
             'id': xdrawio.xutils.randomString(),

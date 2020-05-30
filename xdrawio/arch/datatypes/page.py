@@ -3,7 +3,7 @@ from xdrawio.arch.datatypes import Shape
 
 class Page(Shape):
     r"""Page contains:
-        - list of teams
+        - list of domains
         - each team contains list of groups
         - each group contains list of modules
     """
@@ -12,7 +12,7 @@ class Page(Shape):
 
     def __init__(self):
         super().__init__()
-        self.teams = {}     # dictionary of teams for quick access
+        self.domains = {}     # dictionary of domains for quick access
 
     def initialize(self, mdls, data, wgs_byteam):
         """ initialize page data
@@ -22,30 +22,30 @@ class Page(Shape):
         - configurations = data
 
         output:
-        - Page.teams will contains all teams mentioned in input modules. 
+        - Page.domains will contains all domains mentioned in input modules.
             Each team will contains list of groups
             Each group will contains list of modules
-        - Page.layers will contains all teams' layers
+        - Page.layers will contains all domains' layers
         """
-        from xdrawio.arch.datatypes import Team, Group
+        from xdrawio.arch.datatypes import Domain, Group
 
         for item in mdls:
             team_code = item.team
-            team_info = data.teams[team_code]
-            if team_code not in self.teams:
-                t = Team()
-                t.gbound.display_name = team_info["display_name"]
-                t.gbound.style = team_info["style"]
+            team_info = data.domains[team_code]
+            if team_code not in self.domains:
+                t = Domain()
+                t.gbound.display_name = team_info['Domain Name']
+                t.gbound.style = team_info['Style']
                 t.code = team_code
                 t.workgroup = wgs_byteam[team_code]
-                self.teams[team_code] = t
+                self.domains[team_code] = t
 
-            team = self.teams[team_code]
+            team = self.domains[team_code]
 
             group_code = item.group
             if group_code not in team.groups:
                 g = Group()
-                g.display_name = data.groups[group_code]["display_name"]
+                g.display_name = data.groups[group_code]["Group Name"]
                 g.code = group_code
                 team.groups[group_code] = g
             group = team.groups[group_code]
@@ -59,7 +59,7 @@ class Page(Shape):
         >>> [team1,group1,m1,m2,group2,m3,m4,m5,team2,group3,m6]
         """
         all_items = []
-        for team in self.teams.values():
+        for team in self.domains.values():
             all_items.append(team.gbound)
             for wg in team.workgroup.values():
                 all_items.append(wg)

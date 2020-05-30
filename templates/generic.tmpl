@@ -3,7 +3,7 @@
 {% endblock background %}
 
 {% block content %}
-    <mxCell id="2" value="Teams" style="locked=1;" parent="0" />
+    <mxCell id="2" value="Domain" style="locked=1;" parent="0" />
     <mxCell id="3" value="Groups" style="locked=1;" parent="0" />
     <mxCell id="4" value="Modules" style="locked=1;" parent="0" />
 # for item in items
@@ -30,7 +30,7 @@
       <mxGeometry x="{{ item.x }}" y="{{ item.y }}" width="{{ item.w }}" height="{{ item.h }}" as="geometry" />
     </mxCell>
 # endif
-# if item.class == 'team'
+# if item.class == 'domain'
     <mxCell id="{{ item.id }}" value="{{ item.value }}" style="{{ item.style or 'rounded=0;whiteSpace=wrap;html=1;fillColor=#ffff88;strokeColor=#36393d;verticalAlign=top;fontSize=54;fontStyle=0;'}}" parent="{{ item.parent_id }}" vertex="1">
       <mxGeometry x="{{ item.x }}" y="{{ item.y }}" width="{{ item.w }}" height="{{ item.h }}" as="geometry" />
     </mxCell>
