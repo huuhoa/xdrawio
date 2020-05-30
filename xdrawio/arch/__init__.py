@@ -1,7 +1,9 @@
 from xdrawio.arch.dataloader import read_data
-from xdrawio.arch.layout.stacklayout import FixLayout, GridLayout
+from xdrawio.arch.layout.stacklayout import FixLayout, GridLayout, Layout
 from xdrawio.arch.layout.stacklayout import HStack, VStack
 from xdrawio.arch.layout.layoutparser import parseLayoutSpec
+from xdrawio.arch.datatypes import Domain, Group
+from typing import Dict
 
 
 def generate_layout_spec(path):
@@ -45,11 +47,11 @@ def generate_layout_spec(path):
     return ls.dumps()
 
 
-def replace_node(root, code, new_node):
+def replace_node(root: Layout, code: str, new_node: Layout):
     root.replace(code, new_node)
 
 
-def create_team_node(team, layoutspec, configs):
+def create_team_node(team: Domain, layoutspec, configs):
     # step 1: create layout specification at team level, leaf nodes are groups
     spec = layoutspec.get(team.code, None)
     if spec is not None:
@@ -68,7 +70,7 @@ def create_team_node(team, layoutspec, configs):
     return ls
 
 
-def create_group_node(group, configs):
+def create_group_node(group: Group, configs: Dict[str, str]) -> Layout:
     # default layout
     ls = VStack()
     ls.code = group.code

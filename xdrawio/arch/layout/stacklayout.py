@@ -1,4 +1,4 @@
-
+from __future__ import annotations
 from collections import namedtuple
 
 item_horizonal_padding = 20
@@ -23,7 +23,7 @@ class Layout(object):
     def dumps(self):
         raise NotImplementedError
 
-    def replace(self, code, new_node):
+    def replace(self, code: str, new_node: Layout):
         raise NotImplementedError
 
     def add_attribute(self, attr):
