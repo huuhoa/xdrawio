@@ -28,6 +28,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawTextHelpFormatter,
         description='Render data to drawio file format.',
         epilog='Enjoy!'
     )
@@ -66,6 +67,21 @@ def main():
         choices=['arch', 'features', 'roadmap', 'status'],
         help='draw type, possible values: features, roadmap, status, arch',
         default='features'
+    )
+
+    parser.add_argument(
+        '-l',
+        '--level',
+        type=int,
+        choices=[0, 1, 2, 3],
+        help='''\
+architecture level to draw:
+    + level 0: only draw domains
+    + level 1: draw domains and their subdomains
+    + level 2: draw domains, subdomains and systems (module)
+    + level 3: draw one domain with subdomains, systems, and features
+''',
+        default=2
     )
 
     parser.add_argument('-o', '--output', nargs='?', type=argparse.FileType('w'),
