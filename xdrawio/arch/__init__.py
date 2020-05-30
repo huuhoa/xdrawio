@@ -8,12 +8,12 @@ def generate_layout_spec(path):
     import xdrawio.arch.layout
     import json
 
-    mdls, d = read_data(path)
+    d = read_data(path)
 
     wgs_byteam = xdrawio.arch.layout.layout_workgroup(d.workgroups)
 
     page = xdrawio.arch.datatypes.Page()
-    page.initialize(mdls, d, wgs_byteam)
+    page.initialize(d, wgs_byteam)
 
     # Step 1: layout spec for root
     spec = d.layoutspec.get("CP", None)

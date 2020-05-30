@@ -14,7 +14,7 @@ class Page(Shape):
         super().__init__()
         self.domains = {}     # dictionary of domains for quick access
 
-    def initialize(self, mdls, data, wgs_byteam):
+    def initialize(self, data, wgs_byteam):
         """ initialize page data
 
         input:
@@ -29,7 +29,7 @@ class Page(Shape):
         """
         from xdrawio.arch.datatypes import Domain, Group
 
-        for item in mdls:
+        for item in data.modules:
             team_code = item.team
             team_info = data.domains[team_code]
             if team_code not in self.domains:
