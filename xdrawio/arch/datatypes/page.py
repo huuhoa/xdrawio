@@ -1,4 +1,5 @@
 from xdrawio.arch.datatypes import Shape
+from xdrawio.arch.dataloader import Data
 
 
 class Page(Shape):
@@ -14,7 +15,7 @@ class Page(Shape):
         super().__init__()
         self.domains = {}     # dictionary of domains for quick access
 
-    def initialize(self, data, wgs_byteam):
+    def initialize(self, data: Data, wgs_byteam):
         """ initialize page data
 
         input:
@@ -23,8 +24,8 @@ class Page(Shape):
 
         output:
         - Page.domains will contains all domains mentioned in input modules.
-            Each team will contains list of groups
-            Each group will contains list of modules
+            + Each team will contains list of groups
+            + Each group will contains list of modules
         - Page.layers will contains all domains' layers
         """
         from xdrawio.arch.datatypes import Domain, Group

@@ -16,7 +16,7 @@ def generate_layout_spec(path):
     page.initialize(d, wgs_byteam)
 
     # Step 1: layout spec for root
-    spec = d.layoutspec.get("CP", None)
+    spec = d.layoutspec.get("ROOT", None)
     if spec is not None:
         ls = parseLayoutSpec(spec)
     else:
