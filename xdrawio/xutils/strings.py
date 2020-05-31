@@ -1,8 +1,8 @@
 
 def encode_name(name):
-    '''
-    encode_name does encode special characters to be xml-compatible entities
-    '''
+    """
+    encode_name encodes special characters to be xml-compatible entities
+    """
 
     if name is None:
         return name
@@ -16,10 +16,10 @@ def encode_identity(name):
     return re.sub(pattern, '', name)
 
 
-def randomString(stringLength=10):
+def random_string(string_length=10):
+    """Generate a random string of fixed length """
     import random
     import string
 
-    """Generate a random string of fixed length """
     letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(stringLength))
+    return ''.join(random.choice(letters) for i in range(string_length))

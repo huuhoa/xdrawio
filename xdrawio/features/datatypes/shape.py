@@ -3,7 +3,7 @@ import xdrawio.xutils
 class Shape(object):
     type = "unknnown"
     def __init__(self):
-        self.id = xdrawio.xutils.randomString()
+        self.id = xdrawio.xutils.random_string()
         self.x = 0
         self.y = 0
         self.w = 0

@@ -82,7 +82,7 @@ def create_group_node(group: Group, configs: Dict[str, str]) -> Layout:
                 'display_name': m.display_name,
                 'margin': {'all': 10},
                 'extra': {
-                    'wg_style': configs[m.wg_stype],
+                    'wg_style': configs[m.wg_style],
                     'status_style': configs[m.status],
                 },
                 'class': 'module',

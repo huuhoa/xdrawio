@@ -12,7 +12,7 @@ def transform_func(headers, columns):
 
 
 def transform_table_to_frame(table, row_transform_func=transform_func):
-    """ transform input (array of array) to output (array of dict)"""
+    """ transform input (array of array) to output (array of dict) """
     d = []
     header = None
     for row in table:
@@ -31,7 +31,7 @@ def transform_table_to_frame(table, row_transform_func=transform_func):
 
 
 def transform_table_to_dict(table, row_transform_func=transform_func):
-    """ transform input (array of array) to output (dict of dict)"""
+    """ transform input (array of array) to output (dict of dict) """
     d = {}
     header = None
     for row in table:

@@ -41,7 +41,7 @@ def read_banks_data(wb):
 
         bank_name = cols[0]
         info = {header[i]: cols[i] for i in range(1, len(cols))}
-        bank = {"id": xdrawio.xutils.randomString(), "display_name": bank_name, "info": info}
+        bank = {"id": xdrawio.xutils.random_string(), "display_name": bank_name, "info": info}
         d[bank_name] = bank
 
     return d

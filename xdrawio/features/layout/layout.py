@@ -26,7 +26,7 @@ def layout_workgroup(wgs):
             ti["h"] = height_lut[len(ti.get("members", []))]    # minimum height for empty
             ti["style"] = "WGStyle%d" % i
             ti["type"] = "wg"
-            ti["id"] = xdrawio.xutils.randomString()
+            ti["id"] = xdrawio.xutils.random_string()
             ti["display_name"] = "&lt;br/&gt;".join(ti.get("members", ""))
         
         # recaliberate team 0 height

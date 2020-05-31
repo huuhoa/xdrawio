@@ -21,7 +21,7 @@ def read_roadmap_data(wb):
     d = transform_table_to_frame(data)
     for item in d:
         name = item["Feature Name"]
-        item["id"] = xdrawio.xutils.randomString()
+        item["id"] = xdrawio.xutils.random_string()
         item['display_name'] = name
 
     return d
@@ -115,7 +115,7 @@ def layout_subdomain(subdomains, start_y, item_height, data):
     padding_bottom = 20
     for sdv in sorted(subdomains.values(), key=lambda x: x['sort']):
         sdv_name = sdv['name']
-        sdv['id'] = xdrawio.xutils.randomString()
+        sdv['id'] = xdrawio.xutils.random_string()
         sdv['style'] = data.configurations.get('R_Style_Subdomain_%s_%s' % (sdv['domain'], sdv_name))
         sdv['y'] = start_y
         group_height = layout_group(sdv['groups'], start_y + header_height, item_height, data)
@@ -129,10 +129,10 @@ def layout_group(groups, start_y, item_height, data):
     for g in sorted(groups.values(), key=lambda x: x['name']):
         gname = g['name']
 
-        g["id"] = xdrawio.xutils.randomString()
+        g["id"] = xdrawio.xutils.random_string()
         g["h"] = len(g['layers']) * item_height + item_height - 10
         g["y"] = start_y
-        g["style"] = data.configurations.get('Component_%s' % gname, '')
+        g["style"] = data.configurations.get(f'Component_{gname}', '')
 
         start_y += g["h"] + group_padding
         group_height += g['h']
@@ -210,7 +210,7 @@ def flatten_data(data):
     page_index = 0
     for dv in sorted(domains.values(), key=lambda x: x['display_name']):
         all_items.append({
-            'id': xdrawio.xutils.randomString(),
+            'id': xdrawio.xutils.random_string(),
             'display_name': data.configurations['R_Title_Domain_%s' % dv['name']],
             'sub_title': 'Last updated: %s' % (datetime.datetime.now().strftime('%d-%m-%Y')),
             'type': 'domain',

@@ -60,12 +60,11 @@ def read_module_data(wb, workgroups):
         mdl.group = columns[1]
         mdl.wg_type = columns[3]
         mdl.sub_group = columns[5]
-        mdl.wg_stype = "WGStyle%d" % (workgroups[mdl.wg_type]['Type'])
+        mdl.wg_style = f"WGStyle{workgroups[mdl.wg_type]['Type']}"
         return None, mdl
 
     data = read_table_from_wb(wb, 'Modules', 'Modules')
-    mdls = transform_table_to_frame(data, module_transform)
-    return mdls
+    return transform_table_to_frame(data, module_transform)
 
 
 def read_data(file_path):

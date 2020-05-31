@@ -213,7 +213,7 @@ def flatten_tree(root, parent_id=''):
     if context is None:
         # print("None CONTEXT")
         value = "NONE"
-        id = xdrawio.xutils.randomString()
+        id = xdrawio.xutils.random_string()
         xclass = 'undefined'
         style = None
         extra = None

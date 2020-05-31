@@ -48,7 +48,7 @@ class FixLayout(Layout):
         import xdrawio.xutils
 
         result = {
-            'id': xdrawio.xutils.randomString(),
+            'id': xdrawio.xutils.random_string(),
             'type': 'fix',
         }
         if self.w > 0:
@@ -92,7 +92,7 @@ class GridLayout(Layout):
 
         children = [item.dumps() for item in self.items]
         result = {
-            'id': xdrawio.xutils.randomString(),
+            'id': xdrawio.xutils.random_string(),
             'type': 'grid',
             'flex-direction': 'column',
             # 'flex-wrap': 'wrap',
@@ -151,7 +151,7 @@ class HStack(XStack):
                 last_child.update({'flex': 1})
 
         result = {
-            'id': xdrawio.xutils.randomString(),
+            'id': xdrawio.xutils.random_string(),
             'type': 'container',
             'flex-direction': 'row',
             'children': children,
@@ -172,7 +172,7 @@ class VStack(XStack):
         children = [item.dumps() for item in self.items]
 
         result = {
-            'id': xdrawio.xutils.randomString(),
+            'id': xdrawio.xutils.random_string(),
             'type': 'container',
             'flex-direction': 'column',
             'children': children,
