@@ -70,18 +70,18 @@ arch-test-3:
 
 arch-test-4:
 	@./generate.py -e True -lt layout1.json --write_layout_tree True -o layout1.drawio -t arch CorePayment.xlsx
-	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout1.pdf layout1.drawio
-	@open layout1.pdf
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout-level2.pdf layout1.drawio
+	@open layout-level2.pdf
 
 arch-test-5:
-	@./generate.py -e True -lt layout1.json --write_layout_tree True -l 1 -o layout1.drawio -t arch CorePayment.xlsx
-	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout1.pdf layout1.drawio
-	@open layout1.pdf
+	@./generate.py -ps A3 -e True -lt layout1.json --write_layout_tree True -l 1 -o layout1.drawio -t arch CorePayment.xlsx
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout-level1.pdf layout1.drawio
+	@open layout-level1.pdf
 
 arch-test-6:
-	@./generate.py -e True -lt layout1.json --write_layout_tree True -l 0 -o layout1.drawio -t arch CorePayment.xlsx
-	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout1.pdf layout1.drawio
-	@open layout1.pdf
+	@./generate.py -ps A5 -po landscape -e True -lt layout1.json --write_layout_tree True -l 0 -o layout1.drawio -t arch CorePayment.xlsx
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout-level0.pdf layout1.drawio
+	@open layout-level0.pdf
 
 test:
 	python3 tests.py
