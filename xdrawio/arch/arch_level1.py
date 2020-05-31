@@ -63,7 +63,7 @@ def create_team_node(team: Domain, layoutspec, configs):
 
 def create_group_node(group: Group, configs: Dict[str, str]) -> Layout:
     # default layout
-    ls = FixLayout(group.code, 500, 200)
+    ls = FixLayout(group.code, 500, 150)
     ls.add_attribute({
         'display_name': group.display_name,
         'padding': {'top': 100, 'left': 10, 'bottom': 10, 'right': 10},

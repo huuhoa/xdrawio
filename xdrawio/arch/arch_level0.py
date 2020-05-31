@@ -26,7 +26,7 @@ def generate_layout_spec_level_0(d: Data, page: Page):
             'padding': {'top': 100, 'left': 10, 'bottom': 10, 'right': 10},
             'margin': {'all': 10},
             'min-width': 500,
-            'min-height': 300,
+            'min-height': 200,
             'display_name': team_info['Domain Name'],
             'class': 'domain',
             'style': d.configurations[team_info['Style']]
