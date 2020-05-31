@@ -1,15 +1,13 @@
-from xdrawio.arch.dataloader import Data
-from xdrawio.arch.layout.stacklayout import FixLayout, GridLayout, Layout
-from xdrawio.arch.layout.stacklayout import HStack, VStack
-from xdrawio.arch.layout.layoutparser import parseLayoutSpec
-from xdrawio.arch.datatypes import Domain, Group, Page
 from typing import Dict
-import xdrawio.arch.layout
+
+from xdrawio.arch.dataloader import Data
+from xdrawio.arch.datatypes import Domain, Group, Page
+from xdrawio.arch.layout.layoutparser import parseLayoutSpec
+from xdrawio.arch.layout.stacklayout import FixLayout, Layout
+from xdrawio.arch.layout.stacklayout import HStack
 
 
 def generate_layout_spec_level_1(d: Data, page: Page):
-    import json
-
     # Step 1: layout spec for root
     spec = d.layoutspec.get("ROOT", None)
     if spec is not None:

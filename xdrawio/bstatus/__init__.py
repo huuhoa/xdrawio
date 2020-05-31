@@ -5,27 +5,12 @@ __version__ = '.'.join([str(__value) for __value in __version_info__])
 __copyright__ = '2020, NGUYEN Huu Hoa'
 __license__ = 'MIT'
 
+from xdrawio.xutils import read_table_from_wb, transform_table_to_frame
+
+
 def read_column_data(wb):
-    ws = wb["Banks"]
-    for tbl in ws._tables:
-        if tbl.name == "Stages":
-            data = ws[tbl.ref]
-            break
-
-    td = []
-    header = None
-    for row in data:
-        # Get a list of all columns in each row
-        cols = []
-        for col in row:
-            cols.append(col.value)
-
-        if header is None:
-            header = cols
-            continue
-
-        td.append({header[i]:cols[i] for i in range(len(cols))})
-    
+    data = read_table_from_wb(wb, 'Banks', 'Stages')
+    td = transform_table_to_frame(data)
     td.sort(key=lambda x: x["Sort Order"], reverse=False)
     return td
 
@@ -40,11 +25,7 @@ class Data(object):
 
 
 def read_banks_data(wb):
-    ws = wb["Banks"]
-    for tbl in ws._tables:
-        if tbl.name == "Banks":
-            data = ws[tbl.ref]
-            break
+    data = read_table_from_wb(wb, 'Banks', 'Banks')
 
     d = {}
     header = None
@@ -59,11 +40,8 @@ def read_banks_data(wb):
             continue
 
         bank_name = cols[0]
-        info = {header[i]:cols[i] for i in range(1, len(cols))}
-        bank = {}
-        bank["id"] = xdrawio.xutils.randomString()
-        bank["display_name"] = bank_name
-        bank["info"] = info
+        info = {header[i]: cols[i] for i in range(1, len(cols))}
+        bank = {"id": xdrawio.xutils.randomString(), "display_name": bank_name, "info": info}
         d[bank_name] = bank
 
     return d
@@ -83,6 +61,7 @@ def read_data(file_path):
     d.banks = read_banks_data(wb)
 
     return d
+
 
 def convert_bank_status(status, configs):
     if status is None:
@@ -143,7 +122,6 @@ def flatten_data(data):
         style = data.configurations["StepStatus_%s" % stage]
         return value, style
 
-
     all_items = []
 
     start_x = 0
@@ -202,7 +180,6 @@ def flatten_data(data):
             })
             bank = {
                 "x": 0,
-                "w": 100,
                 "h": 20,
                 "type": "label",
                 "parentid": b["id"],

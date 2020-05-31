@@ -1,10 +1,10 @@
-from xdrawio.arch.dataloader import Data
-from xdrawio.arch.layout.stacklayout import FixLayout, GridLayout, Layout
-from xdrawio.arch.layout.stacklayout import HStack, VStack
-from xdrawio.arch.layout.layoutparser import parseLayoutSpec
-from xdrawio.arch.datatypes import Domain, Group, Page
 from typing import Dict
-import xdrawio.arch.layout
+
+from xdrawio.arch.dataloader import Data
+from xdrawio.arch.datatypes import Domain, Group, Page
+from xdrawio.arch.layout.layoutparser import parseLayoutSpec
+from xdrawio.arch.layout.stacklayout import FixLayout, Layout
+from xdrawio.arch.layout.stacklayout import HStack, VStack
 
 
 def generate_layout_spec_level_2(d: Data, page: Page):
@@ -36,7 +36,6 @@ def generate_layout_spec_level_2(d: Data, page: Page):
         replace_node(ls, team.code, ltree)
 
     return ls.dumps()
-
 
 
 def replace_node(root: Layout, code: str, new_node: Layout):

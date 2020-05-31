@@ -4,7 +4,7 @@ import xdrawio
 import sys
 
 
-def get_page_dimention(page_size, page_orientation):
+def get_page_dimension(page_size, page_orientation):
     sizes = {
         'A0': (9933, 14043),
         'A1': (7016, 9933),
@@ -28,9 +28,9 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawTextHelpFormatter,
         description='Render data to drawio file format.',
-        epilog='Enjoy!'
+        epilog='Enjoy!',
+        formatter_class = argparse.RawTextHelpFormatter,
     )
     parser.version = "1.0"
     parser.add_argument('path', metavar='path', type=str,
@@ -110,7 +110,7 @@ architecture level to draw:
 
     args = parser.parse_args()
 
-    w, h = get_page_dimention(args.page_size, args.page_orientation)
+    w, h = get_page_dimension(args.page_size, args.page_orientation)
     page = {
         "width": w,
         "height": h,

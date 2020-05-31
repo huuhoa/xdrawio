@@ -6,6 +6,8 @@ __version__ = '.'.join([str(__value) for __value in __version_info__])
 __copyright__ = '2020, NGUYEN Huu Hoa'
 __license__ = 'MIT'
 
+from xdrawio.xutils import read_table_from_wb, transform_table_to_frame
+
 
 class Data(object):
     def __init__(self):
@@ -15,29 +17,13 @@ class Data(object):
 
 
 def read_roadmap_data(wb):
-    ws = wb["Roadmap"]
-    for tbl in ws._tables:
-        if tbl.name == "Roadmap":
-            data = ws[tbl.ref]
-            break
-
-    d = []
-    header = None
-    for row in data:
-        # Get a list of all columns in each row
-        cols = []
-        for col in row:
-            cols.append(col.value)
-
-        if header is None:
-            header = cols
-            continue
-
-        item = {header[i]:cols[i] for i in range(len(cols))}
+    data = read_table_from_wb(wb, 'Roadmap', 'Roadmap')
+    d = transform_table_to_frame(data)
+    for item in d:
         name = item["Feature Name"]
         item["id"] = xdrawio.xutils.randomString()
         item['display_name'] = name
-        d.append(item)
+
     return d
 
 
@@ -183,10 +169,10 @@ def compute_width_by_date(start_date):
 def date_is_nearby(d1, d2):
     delta = d1 - d2
     # print(d1, d2, delta.days)
-    return delta.days >= -3 and delta.days <= 3
+    return -3 <= delta.days <= 3
 
 
-def flatten_roadmapitems(all_items, items, parentid, start_y):
+def flatten_roadmap_items(all_items, items, parent_id, start_y):
     items.sort(key=lambda x: x['End Date'], reverse=True)
     prev_item = {
         'Start Date': datetime.datetime(2000, 1, 1)
@@ -210,19 +196,15 @@ def flatten_roadmapitems(all_items, items, parentid, start_y):
             'type': "item",
             'display_name': b["Feature Name"],
             "style": b['style'],
-            "parentid": parentid,
+            "parentid": parent_id,
         })
 
 
 def flatten_data(data):
     all_items = []
 
-    start_x = 0
     start_y = 200
-    counter = 0
-    stages = {}
 
-    item_padding = 70
     item_height = 50
     domains = groupby_component(data)
     page_index = 0
@@ -245,7 +227,7 @@ def flatten_data(data):
                 parentid = g["id"]
                 for l in sorted(g['layers'].keys()):
                     layer = g['layers'][l]
-                    flatten_roadmapitems(all_items, layer, parentid, inner_y)
+                    flatten_roadmap_items(all_items, layer, parentid, inner_y)
                     inner_y += item_height
 
         start_y += data.configurations['height']

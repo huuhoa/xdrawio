@@ -1,7 +1,7 @@
 from __future__ import annotations
 from collections import namedtuple
 
-item_horizonal_padding = 20
+item_horizontal_padding = 20
 item_vertical_padding = 20
 
 Rect = namedtuple('Rect', 'x y w h')
@@ -44,7 +44,7 @@ class FixLayout(Layout):
         return "<F: {}, {}>".format(self.code, super().__repr__())
 
     def dumps(self):
-        ''' dump current stack to array '''
+        """ dump current stack to array """
         import xdrawio.xutils
 
         result = {
@@ -87,7 +87,7 @@ class GridLayout(Layout):
         return False
 
     def dumps(self):
-        ''' dump current stack to array '''
+        """ dump current stack to array """
         import xdrawio.xutils
 
         children = [item.dumps() for item in self.items]
@@ -141,7 +141,7 @@ class HStack(XStack):
         self._type = "H"
 
     def dumps(self):
-        ''' dump current stack to array '''
+        """ dump current stack to array """
         import xdrawio.xutils
         children = [item.dumps() for item in self.items]
         if len(children) >= 2:
@@ -167,7 +167,7 @@ class VStack(XStack):
         self._type = "V"
 
     def dumps(self):
-        ''' dump current stack to array '''
+        """ dump current stack to array """
         import xdrawio.xutils
         children = [item.dumps() for item in self.items]
 
