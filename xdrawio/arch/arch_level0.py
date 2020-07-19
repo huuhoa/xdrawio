@@ -7,7 +7,8 @@ from xdrawio.arch.layout.stacklayout import HStack
 
 def generate_layout_spec_level_0(d: Data, page: Page):
     # Step 1: layout spec for root
-    spec = d.layoutspec.get("ROOT", None)
+    spec = d.layoutspec.get("ROOT0", None)
+    print(spec)
     if spec is not None:
         ls = parseLayoutSpec(spec)
     else:
@@ -17,23 +18,22 @@ def generate_layout_spec_level_0(d: Data, page: Page):
             ls.items.append(FixLayout(team.code, 0, 0))
 
     # Step 2: layout spec for team
-    for team in page.domains.values():
-        team_info = d.domains[team.code]
+    for team in d.domains.values():
         # 2.1 layout spec for team, result a layout tree
-        ltree = FixLayout(team.code, 0, 0)
+        ltree = FixLayout(team['Code'], 0, 0)
         # 2.2 add team spec for layout tree
         ltree.add_attribute({
             'padding': {'top': 100, 'left': 10, 'bottom': 10, 'right': 10},
             'margin': {'all': 10},
             'min-width': 500,
             'min-height': 200,
-            'display_name': team_info['Domain Name'],
+            'display_name': team['Domain Name'],
             'class': 'domain',
-            'style': d.configurations[team_info['Style']]
+            'style': d.configurations[team['Style']]
         })
 
         # 2.3 replace layout tree with team node in root
-        replace_node(ls, team.code, ltree)
+        replace_node(ls, team['Code'], ltree)
 
     return ls.dumps()
 

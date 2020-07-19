@@ -79,7 +79,7 @@ arch-test-5:
 	@open layout-level1.pdf
 
 arch-test-6:
-	@./generate.py -ps A5 -po landscape -e True -lt layout1.json --write_layout_tree True -l 0 -o layout1.drawio -t arch CorePayment.xlsx
+	@./generate.py -ps A4 -po landscape -e True -lt layout1.json --write_layout_tree True -l 0 -o layout1.drawio -t arch CorePayment.xlsx
 	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout-level0.pdf layout1.drawio
 	@open layout-level0.pdf
 
