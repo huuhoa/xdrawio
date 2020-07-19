@@ -1,11 +1,13 @@
+WRK_DIR="./temp"
+
 render:
-	./generate.py "CorePayment.xlsx" | pbcopy
+	./generate.py "$(WRK_DIR)/CorePayment.xlsx" | pbcopy
 
 pdf:
-	rm -f cp.pdf
-	./generate.py "CorePayment.xlsx" -po landscape > cp.drawio
-	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp.pdf cp.drawio
-	open cp.pdf
+	rm -f $(WRK_DIR)/cp.pdf
+	./generate.py "$(WRK_DIR)/CorePayment.xlsx" -po landscape > $(WRK_DIR)/cp.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/cp.pdf $(WRK_DIR)/cp.drawio
+	open $(WRK_DIR)/cp.pdf
 
 ppr:
 	rm -f ppr.pdf
@@ -20,10 +22,10 @@ bb:
 	open bank_binding.pdf
 
 status:
-	rm -f cp_bank_status.pdf
-	./generate.py -t status -ps A5 CorePayment.xlsx > cp_bank_status.drawio
-	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_bank_status.pdf cp_bank_status.drawio
-	open cp_bank_status.pdf
+	rm -f $(WRK_DIR)/cp_bank_status.pdf
+	./generate.py -t status -ps A5 $(WRK_DIR)/CorePayment.xlsx > $(WRK_DIR)/cp_bank_status.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/cp_bank_status.pdf $(WRK_DIR)/cp_bank_status.drawio
+	open $(WRK_DIR)/cp_bank_status.pdf
 
 status-svg:
 	rm -f bank_status.svg
@@ -31,27 +33,27 @@ status-svg:
 
 .PHONY: roadmap
 roadmap:
-	rm -f cp_roadmap.pdf
-	./generate.py -t roadmap -ps A5 CorePayment.xlsx > cp_roadmap.drawio
-	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_roadmap.pdf cp_roadmap.drawio
-	open cp_roadmap.pdf
+	rm -f $(WRK_DIR)/cp_roadmap.pdf
+	./generate.py -t roadmap -ps A5 $(WRK_DIR)/CorePayment.xlsx > $(WRK_DIR)/cp_roadmap.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/cp_roadmap.pdf $(WRK_DIR)/cp_roadmap.drawio
+	open $(WRK_DIR)/cp_roadmap.pdf
 
 cp:
-	./generate.py CorePayment.xlsx -po landscape > cp_features.drawio
-	./generate.py -t status -ps A5 CorePayment.xlsx > cp_bank_status.drawio
-	./generate.py -t roadmap -ps A5 CorePayment.xlsx > cp_roadmap.drawio
-	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_roadmap.pdf cp_roadmap.drawio
-	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_bank_status.pdf cp_bank_status.drawio
-	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp_features.pdf cp_features.drawio
+	./generate.py $(WRK_DIR)/CorePayment.xlsx -po landscape > $(WRK_DIR)/cp_features.drawio
+	./generate.py -t status -ps A5 $(WRK_DIR)/CorePayment.xlsx > $(WRK_DIR)/cp_bank_status.drawio
+	./generate.py -t roadmap -ps A5 $(WRK_DIR)/CorePayment.xlsx > $(WRK_DIR)/cp_roadmap.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/cp_roadmap.pdf $(WRK_DIR)/cp_roadmap.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/cp_bank_status.pdf $(WRK_DIR)/cp_bank_status.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/cp_features.pdf $(WRK_DIR)/cp_features.drawio
 
 arch:
-	rm -f cp.pdf
-	./generate.py -t arch "CorePayment.xlsx" -po landscape > cp.drawio
-	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o cp.pdf cp.drawio
-	open cp.pdf
+	rm -f $(WRK_DIR)/cp.pdf
+	./generate.py -t arch "$(WRK_DIR)/CorePayment.xlsx" -po landscape > $(WRK_DIR)/cp.drawio
+	/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/cp.pdf $(WRK_DIR)/cp.drawio
+	open $(WRK_DIR)/cp.pdf
 
 arch-test:
-	@./generate.py -t arch "CorePayment.xlsx" -d True -po landscape
+	@./generate.py -t arch "$(WRK_DIR)/CorePayment.xlsx" -d True -po landscape
 
 arch-test-1:
 	@./generate.py -t arch layout.xlsx -d True -po landscape | ./layout.py -o layout.drawio
@@ -59,29 +61,29 @@ arch-test-1:
 	@open layout.pdf
 
 arch-test-2:
-	@./generate.py -t arch CorePayment.xlsx -d True -po landscape | ./layout.py -o layout.drawio
-	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout.pdf layout.drawio
-	@open layout.pdf
+	@./generate.py -t arch $(WRK_DIR)/CorePayment.xlsx -d True -po landscape | ./layout.py -o $(WRK_DIR)/layout.drawio
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/layout.pdf $(WRK_DIR)/layout.drawio
+	@open $(WRK_DIR)/layout.pdf
 
 arch-test-3:
-	@./generate.py -e True -o layout1.drawio -t arch CorePayment.xlsx
-	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout1.pdf layout1.drawio
-	@open layout1.pdf
+	@./generate.py -e True -o $(WRK_DIR)/layout1.drawio -t arch $(WRK_DIR)/CorePayment.xlsx
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/layout1.pdf $(WRK_DIR)/layout1.drawio
+	@open $(WRK_DIR)/layout1.pdf
 
 arch-test-4:
-	@./generate.py -e True -lt layout1.json --write_layout_tree True -o layout1.drawio -t arch CorePayment.xlsx
-	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout-level2.pdf layout1.drawio
-	@open layout-level2.pdf
+	@./generate.py -e True -lt $(WRK_DIR)/layout1.json --write_layout_tree True -o $(WRK_DIR)/layout1.drawio -t arch $(WRK_DIR)/CorePayment.xlsx
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/layout-level2.pdf $(WRK_DIR)/layout1.drawio
+	@open $(WRK_DIR)/layout-level2.pdf
 
 arch-test-5:
-	@./generate.py -ps A3 -e True -lt layout1.json --write_layout_tree True -l 1 -o layout1.drawio -t arch CorePayment.xlsx
-	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout-level1.pdf layout1.drawio
-	@open layout-level1.pdf
+	@./generate.py -ps A3 -e True -lt $(WRK_DIR)/layout1.json --write_layout_tree True -l 1 -o $(WRK_DIR)/layout1.drawio -t arch $(WRK_DIR)/CorePayment.xlsx
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/layout-level1.pdf $(WRK_DIR)/layout1.drawio
+	@open $(WRK_DIR)/layout-level1.pdf
 
 arch-test-6:
-	@./generate.py -ps A4 -po landscape -e True -lt layout1.json --write_layout_tree True -l 0 -o layout1.drawio -t arch CorePayment.xlsx
-	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o layout-level0.pdf layout1.drawio
-	@open layout-level0.pdf
+	@./generate.py -ps A4 -po landscape -e True -lt $(WRK_DIR)/layout1.json --write_layout_tree True -l 0 -o $(WRK_DIR)/layout1.drawio -t arch $(WRK_DIR)/CorePayment.xlsx
+	@/Applications/draw.io.app/Contents/MacOS/draw.io --export -f pdf -o $(WRK_DIR)/layout-level0.pdf $(WRK_DIR)/layout1.drawio
+	@open $(WRK_DIR)/layout-level0.pdf
 
 test:
 	python3 tests.py
